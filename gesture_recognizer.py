@@ -53,12 +53,12 @@ This notebook shows the end-to-end process of customizing a gesture recognizer m
 Install the MediaPipe Model Maker package.
 """
 
-!pip install --upgrade pip
-!pip install mediapipe-model-maker
+# !pip install --upgrade pip
+# !pip install mediapipe-model-maker
 
 """Import the required libraries."""
 
-from google.colab import files
+# from google.colab import files
 import os
 import tensorflow as tf
 assert tf.__version__.startswith('2')
@@ -78,8 +78,8 @@ The dataset for gesture recognition in model maker requires the following format
 This example uses a rock paper scissors dataset sample which is downloaded from GCS.
 """
 
-!wget https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/rps_data_sample.zip
-!unzip rps_data_sample.zip
+# !wget https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/rps_data_sample.zip
+# !unzip rps_data_sample.zip
 dataset_path = "rps_data_sample"
 
 """Verify the rock paper scissors dataset by printing the labels. There should be 4 gesture labels, with one of them being the `none` gesture."""
@@ -155,9 +155,9 @@ After creating the model, convert and export it to a Tensorflow Lite model forma
 """
 
 model.export_model()
-!ls exported_model
+# !ls exported_model
 
-files.download('exported_model/gesture_recognizer.task')
+# files.download('exported_model/gesture_recognizer.task')
 
 """## Run the model on-device
 
