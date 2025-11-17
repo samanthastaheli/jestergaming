@@ -51,7 +51,8 @@ from get_asl_data import get_asl_data
 ### Get the dataset
 
 The dataset for gesture recognition in model maker requires the following format: 
-`<dataset_path>/<label_name>/<img_name>.*`. In addition, one of the label names (`label_names`) must be `none`. The `none` label represents any gesture that isn't classified as one of the other gestures.
+`<dataset_path>/<label_name>/<img_name>.*`. In addition, one of the label names (`label_names`) must be `none`. The `none` label represents 
+any gesture that isn't classified as one of the other gestures.
 
 This example uses a rock paper scissors dataset sample which is downloaded from GCS.
 
@@ -63,11 +64,16 @@ get none folder from rock paper scissors dataset:
 home_path = os.path.expanduser("~")
 dataset_path = f"{home_path}/jester_data"
 
-# Verify the labels. There should be 4 gesture labels, with one of them being the `none` gesture.
 
-# Call get data helper functions
+#----- Call get data helper functions -----# 
+
 # get_hagrid_data()
-get_asl_data()
+# get_asl_data()
+
+
+#----- Verify the labels -----# 
+
+# There should be 10 gesture labels, with one of them being the `none` gesture.
 
 print(dataset_path)
 labels = []
@@ -77,95 +83,99 @@ for i in os.listdir(dataset_path):
 print(labels)
 
 
-# """### Run the example
-# The workflow consists of 4 steps which have been separated into their own code blocks.
+"""### Run the example
+The workflow consists of 4 steps which have been separated into their own code blocks.
 
-# **Load the dataset**
+Load the dataset located at `dataset_path` by using the `Dataset.from_folder` method. When loading the dataset, run the 
+pre-packaged hand detection model from MediaPipe Hands to detect the hand landmarks from the images. Any images without 
+detected hands are ommitted from the dataset. The resulting dataset will contain the extracted hand landmark positions 
+from each image, rather than images themselves.
 
-# Load the dataset located at `dataset_path` by using the `Dataset.from_folder` method. When loading the dataset, run the pre-packaged hand detection model from MediaPipe Hands to detect the hand landmarks from the images. Any images without detected hands are ommitted from the dataset. The resulting dataset will contain the extracted hand landmark positions from each image, rather than images themselves.
+The `HandDataPreprocessingParams` class contains two configurable options for the data loading process:
+* `shuffle`: A boolean controlling whether to shuffle the dataset. Defaults to true.
+* `min_detection_confidence`: A float between 0 and 1 controlling the confidence threshold for hand detection.
 
-# The `HandDataPreprocessingParams` class contains two configurable options for the data loading process:
-# * `shuffle`: A boolean controlling whether to shuffle the dataset. Defaults to true.
-# * `min_detection_confidence`: A float between 0 and 1 controlling the confidence threshold for hand detection.
+Split the dataset: 80% for training, 10% for validation, and 10% for testing.
+"""
 
-# Split the dataset: 80% for training, 10% for validation, and 10% for testing.
-# """
+#----- Load Data -----#
 
-# data = gesture_recognizer.Dataset.from_folder(
-#     dirname=dataset_path,
-#     hparams=gesture_recognizer.HandDataPreprocessingParams()
-# )
-# train_data, rest_data = data.split(0.8)
-# validation_data, test_data = rest_data.split(0.5)
+data = gesture_recognizer.Dataset.from_folder(
+    dirname=dataset_path,
+    hparams=gesture_recognizer.HandDataPreprocessingParams()
+)
+train_data, rest_data = data.split(0.8)
+validation_data, test_data = rest_data.split(0.5)
 
-# """**Train the model**
 
-# Train the custom gesture recognizer by using the create method and passing in the training data, validation data, model options, and hyperparameters. For more information on model options and hyperparameters, see the [Hyperparameters](#hyperparameters) section below.
-# """
+#----- Train the model -----#
 
-# hparams = gesture_recognizer.HParams(export_dir="exported_model")
-# options = gesture_recognizer.GestureRecognizerOptions(hparams=hparams)
-# model = gesture_recognizer.GestureRecognizer.create(
-#     train_data=train_data,
-#     validation_data=validation_data,
-#     options=options
-# )
+# Train the custom gesture recognizer by using the create method and passing in the training data, validation data, model options, 
+# and hyperparameters. For more information on model options and hyperparameters, see the [Hyperparameters](#hyperparameters) section below.
 
-# """**Evaluate the model performance**
+hparams = gesture_recognizer.HParams(export_dir="exported_model")
+options = gesture_recognizer.GestureRecognizerOptions(hparams=hparams)
+model = gesture_recognizer.GestureRecognizer.create(
+    train_data=train_data,
+    validation_data=validation_data,
+    options=options
+)
+
+#----- Evaluate the model performance -----#
 
 # After training the model, evaluate it on a test dataset and print the loss and accuracy metrics.
-# """
 
-# loss, acc = model.evaluate(test_data, batch_size=1)
-# print(f"Test loss:{loss}, Test accuracy:{acc}")
+loss, acc = model.evaluate(test_data, batch_size=1)
+print(f"Test loss:{loss}, Test accuracy:{acc}")
 
-# """**Export to Tensorflow Lite Model**
+#----- Export to Tensorflow Lite Model -----#
+# After creating the model, convert and export it to a Tensorflow Lite model format for later use on an on-device application. 
+# The export also includes model metadata, which includes the label file.
 
-# After creating the model, convert and export it to a Tensorflow Lite model format for later use on an on-device application. The export also includes model metadata, which includes the label file.
-# """
+model.export_model()
+# !ls exported_model
 
-# model.export_model()
-# # !ls exported_model
+# files.download('exported_model/gesture_recognizer.task')
 
-# # files.download('exported_model/gesture_recognizer.task')
+"""## Run the model on-device
 
-# """## Run the model on-device
+To use the TFLite model for on-device usage through MediaPipe Tasks, refer to the Gesture Recognizer page: https://developers.google.com/mediapipe/solutions/vision/gesture_recognizer.
 
-# To use the TFLite model for on-device usage through MediaPipe Tasks, refer to the Gesture Recognizer [overview page](https://developers.google.com/mediapipe/solutions/vision/gesture_recognizer).
+## Hyperparameters
 
-# ## Hyperparameters {:#hyperparameters}
+You can further customize the model using the `GestureRecognizerOptions` class, which has two optional parameters for `ModelOptions` and `HParams`. 
+Use the `ModelOptions` class to customize parameters related to the model itself, and the `HParams` class to customize other parameters related to training and saving the model.
 
-# You can further customize the model using the `GestureRecognizerOptions` class, which has two optional parameters for `ModelOptions` and `HParams`. Use the `ModelOptions` class to customize parameters related to the model itself, and the `HParams` class to customize other parameters related to training and saving the model.
+`ModelOptions` has one customizable parameter that affects accuracy:
+* `dropout_rate`: The fraction of the input units to drop. Used in dropout layer. Defaults to 0.05.
+* `layer_widths`: A list of hidden layer widths for the gesture model. Each element in the list will create a new hidden layer with the specified width. 
+                  The hidden layers are separated with BatchNorm, Dropout, and ReLU. Defaults to an empty list(no hidden layers).
+* `HParams` has the following list of customizable parameters which affect model accuracy:
+* `learning_rate`: The learning rate to use for gradient descent training. Defaults to 0.001.
+* `batch_size`: Batch size for training. Defaults to 2.
+* `epochs`: Number of training iterations over the dataset. Defaults to 10.
+* `steps_per_epoch`: An optional integer that indicates the number of training steps per epoch. If not set, the training pipeline calculates  
+                     the default steps per epoch as the training dataset size divided by batch size.
+* `shuffle`: True if the dataset is shuffled before training. Defaults to False.
+* `lr_decay`: Learning rate decay to use for gradient descent training. Defaults to 0.99.
+* `gamma`: Gamma parameter for focal loss. Defaults to 2
 
-# `ModelOptions` has one customizable parameter that affects accuracy:
-# * `dropout_rate`: The fraction of the input units to drop. Used in dropout layer. Defaults to 0.05.
-# * `layer_widths`: A list of hidden layer widths for the gesture model. Each element in the list will create a new hidden layer with the specified width. The hidden layers are separated with BatchNorm, Dropout, and ReLU. Defaults to an empty list(no hidden layers).
+Additional `HParams` parameter that does not affect model accuracy:
+* `export_dir`: The location of the model checkpoint files and exported model files.
 
-# `HParams` has the following list of customizable parameters which affect model accuracy:
-# * `learning_rate`: The learning rate to use for gradient descent training. Defaults to 0.001.
-# * `batch_size`: Batch size for training. Defaults to 2.
-# * `epochs`: Number of training iterations over the dataset. Defaults to 10.
-# * `steps_per_epoch`: An optional integer that indicates the number of training steps per epoch. If not set, the training pipeline calculates the default steps per epoch as the training dataset size divided by batch size.
-# * `shuffle`: True if the dataset is shuffled before training. Defaults to False.
-# * `lr_decay`: Learning rate decay to use for gradient descent training. Defaults to 0.99.
-# * `gamma`: Gamma parameter for focal loss. Defaults to 2
+For example, the following trains a new model with the dropout_rate of 0.2 and learning rate of 0.003.
+"""
 
-# Additional `HParams` parameter that does not affect model accuracy:
-# * `export_dir`: The location of the model checkpoint files and exported model files.
+hparams = gesture_recognizer.HParams(learning_rate=0.003, export_dir="exported_model_2")
+model_options = gesture_recognizer.ModelOptions(dropout_rate=0.2)
+options = gesture_recognizer.GestureRecognizerOptions(model_options=model_options, hparams=hparams)
+model_2 = gesture_recognizer.GestureRecognizer.create(
+    train_data=train_data,
+    validation_data=validation_data,
+    options=options
+)
 
-# For example, the following trains a new model with the dropout_rate of 0.2 and learning rate of 0.003.
-# """
+"""Evaluate the newly trained model."""
 
-# hparams = gesture_recognizer.HParams(learning_rate=0.003, export_dir="exported_model_2")
-# model_options = gesture_recognizer.ModelOptions(dropout_rate=0.2)
-# options = gesture_recognizer.GestureRecognizerOptions(model_options=model_options, hparams=hparams)
-# model_2 = gesture_recognizer.GestureRecognizer.create(
-#     train_data=train_data,
-#     validation_data=validation_data,
-#     options=options
-# )
-
-# """Evaluate the newly trained model."""
-
-# loss, accuracy = model_2.evaluate(test_data)
-# print(f"Test loss:{loss}, Test accuracy:{accuracy}")
+loss, accuracy = model_2.evaluate(test_data)
+print(f"Test loss:{loss}, Test accuracy:{accuracy}")
