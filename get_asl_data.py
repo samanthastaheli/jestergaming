@@ -1,6 +1,7 @@
 import pandas as pd
 import kagglehub
 import shutil 
+import os
 
 def get_asl_data():
 
@@ -9,10 +10,12 @@ def get_asl_data():
 
   print("Path to dataset files:", path)
 
-  os.makedirs("data", exist_ok=True)
+  home_path = os.path.expanduser("~")
 
-  #files needed (R, J, M, T, )
-  folders_needed = {"R":"Action", "J":"Journal", "M":"Map", "T":"Toolbar"}
+  os.makedirs("{home_path}/jester_data", exist_ok=True)
+
+  #files needed (R, J, M, T, C)
+  folders_needed = {"C":"tool","R":"action", "J":"journal", "M":"map", "T":"toolbar"}
 
   for asl_folders in os.listdir(f"{path}/asl_alphabet_train/asl_alphabet_train"):
     if asl_folders in folders_needed.keys():
