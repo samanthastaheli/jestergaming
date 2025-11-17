@@ -109,8 +109,9 @@ dataset_path = f"{home_path}/jester_data"
 
 #----- Call get data helper functions -----# 
 
-# get_hagrid_data()
-# get_asl_data()
+if not all([os.path.isdir(f"{dataset_path}/action"), os.path.isdir(f"{dataset_path}/five"), os.path.isdir(f"{dataset_path}/none")]):
+  get_hagrid_data()
+  get_asl_data()
 
 
 #----- Verify the labels -----# 
@@ -127,6 +128,7 @@ print(labels)
 
 #----- Load Data -----#
 
+print("\033[35mLoading data\033[0m")
 data = gesture_recognizer.Dataset.from_folder(
     dirname=dataset_path,
     hparams=gesture_recognizer.HandDataPreprocessingParams()
@@ -139,6 +141,8 @@ validation_data, test_data = rest_data.split(0.5)
 
 # Train the custom gesture recognizer by using the create method and passing in the training data, validation data, model options, 
 # and hyperparameters. For more information on model options and hyperparameters, see the [Hyperparameters](#hyperparameters) section below.
+
+print("\033[35mTraining model\033[0m")
 
 hparams = gesture_recognizer.HParams(export_dir="exported_model")
 options = gesture_recognizer.GestureRecognizerOptions(hparams=hparams)
@@ -153,6 +157,8 @@ model = gesture_recognizer.GestureRecognizer.create(
 
 # After training the model, evaluate it on a test dataset and print the loss and accuracy metrics.
 
+print("\033[35mEvaluating model\033[0m")
+
 loss, acc = model.evaluate(test_data, batch_size=1)
 print(f"Test loss:{loss}, Test accuracy:{acc}")
 
@@ -161,6 +167,8 @@ print(f"Test loss:{loss}, Test accuracy:{acc}")
 
 # After creating the model, convert and export it to a Tensorflow Lite model format for later use on an on-device application. 
 # The export also includes model metadata, which includes the label file.
+
+print("\033[95mExport model\033[0m")
 
 model.export_model()
 # !ls exported_model
@@ -180,6 +188,8 @@ model_2 = gesture_recognizer.GestureRecognizer.create(
 )
 
 #----- Evaluate the newly trained model -----#
+
+print("\033[95mEvaulate newly trained model model\033[0m")
 
 loss, accuracy = model_2.evaluate(test_data)
 print(f"Test loss:{loss}, Test accuracy:{accuracy}")
