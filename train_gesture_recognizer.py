@@ -9,24 +9,11 @@ Original file is located at
 Project: /mediapipe/_project.yaml
 Book: /mediapipe/_book.yaml
 
-<link rel="stylesheet" href="/mediapipe/site.css">
+The MediaPipe Model Maker package is a low-code solution for customizing on-device machine learning (ML) Models.
 
-# Hand gesture recognition model customization guide
+## Prerequisites
 
-<table align="left" class="buttons">
-  <td>
-    <a href="https://colab.research.google.com/github/googlesamples/mediapipe/blob/main/examples/customization/gesture_recognizer.ipynb" target="_blank">
-      <img src="https://developers.google.com/static/mediapipe/solutions/customization/colab-logo-32px_1920.png" alt="Colab logo"> Run in Colab
-    </a>
-  </td>
-
-  <td>
-    <a href="https://github.com/googlesamples/mediapipe/blob/main/examples/customization/gesture_recognizer.ipynb" target="_blank">
-      <img src="https://developers.google.com/static/mediapipe/solutions/customization/github-logo-32px_1920.png" alt="GitHub logo">
-      View on GitHub
-    </a>
-  </td>
-</table>
+Install the MediaPipe Model Maker package.
 """
 
 #@title License information
@@ -44,21 +31,9 @@ Book: /mediapipe/_book.yaml
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The MediaPipe Model Maker package is a low-code solution for customizing on-device machine learning (ML) Models.
-
-This notebook shows the end-to-end process of customizing a gesture recognizer model for recognizing some common hand gestures in the [HaGRID](https://www.kaggle.com/datasets/innominate817/hagrid-sample-30k-384p) dataset.
-
-## Prerequisites
-
-Install the MediaPipe Model Maker package.
-"""
-
-# !pip install --upgrade pip
-# !pip install mediapipe-model-maker
 
 """Import the required libraries."""
 
-# from google.colab import files
 import os
 import tensorflow as tf
 assert tf.__version__.startswith('2')
@@ -67,20 +42,21 @@ from mediapipe_model_maker import gesture_recognizer
 
 import matplotlib.pyplot as plt
 
-"""## Simple End-to-End Example
-
-This end-to-end example uses Model Maker to customize a model for on-device gesture recognition.
-
+"""
 ### Get the dataset
 
-The dataset for gesture recognition in model maker requires the following format: `<dataset_path>/<label_name>/<img_name>.*`. In addition, one of the label names (`label_names`) must be `none`. The `none` label represents any gesture that isn't classified as one of the other gestures.
+The dataset for gesture recognition in model maker requires the following format: 
+`<dataset_path>/<label_name>/<img_name>.*`. In addition, one of the label names (`label_names`) must be `none`. The `none` label represents any gesture that isn't classified as one of the other gestures.
 
 This example uses a rock paper scissors dataset sample which is downloaded from GCS.
+
+get none folder from rock paper scissors dataset:
+!wget https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/rps_data_sample.zip
+!unzip rps_data_sample.zip
 """
 
-# !wget https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/rps_data_sample.zip
-# !unzip rps_data_sample.zip
-dataset_path = "rps_data_sample"
+
+dataset_path = "data"
 
 """Verify the rock paper scissors dataset by printing the labels. There should be 4 gesture labels, with one of them being the `none` gesture."""
 
