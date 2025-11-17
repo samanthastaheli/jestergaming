@@ -32,7 +32,7 @@ Install the MediaPipe Model Maker package.
 # limitations under the License.
 
 
-"""Import the required libraries."""
+# Import the required libraries.
 
 import os
 import tensorflow as tf
@@ -41,6 +41,10 @@ assert tf.__version__.startswith('2')
 from mediapipe_model_maker import gesture_recognizer
 
 import matplotlib.pyplot as plt
+
+# Import get data functions
+
+from get_hagrid_data import get_hagrid_data
 
 """
 ### Get the dataset
@@ -58,7 +62,11 @@ get none folder from rock paper scissors dataset:
 
 dataset_path = "data"
 
-"""Verify the rock paper scissors dataset by printing the labels. There should be 4 gesture labels, with one of them being the `none` gesture."""
+# Verify the labels. There should be 4 gesture labels, with one of them being the `none` gesture.
+
+# Call get data helper functions
+get_hagrid_data()
+
 
 print(dataset_path)
 labels = []
@@ -67,21 +75,6 @@ for i in os.listdir(dataset_path):
     labels.append(i)
 print(labels)
 
-"""To better understand the dataset, plot a couple of example images for each gesture."""
-
-NUM_EXAMPLES = 5
-
-for label in labels:
-  label_dir = os.path.join(dataset_path, label)
-  example_filenames = os.listdir(label_dir)[:NUM_EXAMPLES]
-  fig, axs = plt.subplots(1, NUM_EXAMPLES, figsize=(10,2))
-  for i in range(NUM_EXAMPLES):
-    axs[i].imshow(plt.imread(os.path.join(label_dir, example_filenames[i])))
-    axs[i].get_xaxis().set_visible(False)
-    axs[i].get_yaxis().set_visible(False)
-  fig.suptitle(f'Showing {NUM_EXAMPLES} examples for {label}')
-
-plt.show()
 
 """### Run the example
 The workflow consists of 4 steps which have been separated into their own code blocks.
