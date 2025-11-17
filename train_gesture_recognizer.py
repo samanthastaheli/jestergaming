@@ -14,40 +14,7 @@ The MediaPipe Model Maker package is a low-code solution for customizing on-devi
 ## Prerequisites
 
 Install the MediaPipe Model Maker package.
-"""
 
-#@title License information
-# Copyright 2023 The MediaPipe Authors.
-# Licensed under the Apache License, Version 2.0 (the "License");
-#
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-
-# Import the required libraries.
-
-import os
-import tensorflow as tf
-assert tf.__version__.startswith('2')
-
-from mediapipe_model_maker import gesture_recognizer
-
-import matplotlib.pyplot as plt
-
-# Import get data functions
-
-from get_hagrid_data import get_hagrid_data
-from get_asl_data import get_asl_data
-
-"""
 ### Get the dataset
 
 The dataset for gesture recognition in model maker requires the following format: 
@@ -59,31 +26,9 @@ This example uses a rock paper scissors dataset sample which is downloaded from 
 get none folder from rock paper scissors dataset:
 !wget https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/rps_data_sample.zip
 !unzip rps_data_sample.zip
-"""
-
-home_path = os.path.expanduser("~")
-dataset_path = f"{home_path}/jester_data"
 
 
-#----- Call get data helper functions -----# 
-
-# get_hagrid_data()
-# get_asl_data()
-
-
-#----- Verify the labels -----# 
-
-# There should be 10 gesture labels, with one of them being the `none` gesture.
-
-print(dataset_path)
-labels = []
-for i in os.listdir(dataset_path):
-  if os.path.isdir(os.path.join(dataset_path, i)):
-    labels.append(i)
-print(labels)
-
-
-"""### Run the example
+### Run the example
 The workflow consists of 4 steps which have been separated into their own code blocks.
 
 Load the dataset located at `dataset_path` by using the `Dataset.from_folder` method. When loading the dataset, run the 
@@ -96,48 +41,6 @@ The `HandDataPreprocessingParams` class contains two configurable options for th
 * `min_detection_confidence`: A float between 0 and 1 controlling the confidence threshold for hand detection.
 
 Split the dataset: 80% for training, 10% for validation, and 10% for testing.
-"""
-
-#----- Load Data -----#
-
-data = gesture_recognizer.Dataset.from_folder(
-    dirname=dataset_path,
-    hparams=gesture_recognizer.HandDataPreprocessingParams()
-)
-train_data, rest_data = data.split(0.8)
-validation_data, test_data = rest_data.split(0.5)
-
-
-#----- Train the model -----#
-
-# Train the custom gesture recognizer by using the create method and passing in the training data, validation data, model options, 
-# and hyperparameters. For more information on model options and hyperparameters, see the [Hyperparameters](#hyperparameters) section below.
-
-hparams = gesture_recognizer.HParams(export_dir="exported_model")
-options = gesture_recognizer.GestureRecognizerOptions(hparams=hparams)
-model = gesture_recognizer.GestureRecognizer.create(
-    train_data=train_data,
-    validation_data=validation_data,
-    options=options
-)
-
-#----- Evaluate the model performance -----#
-
-# After training the model, evaluate it on a test dataset and print the loss and accuracy metrics.
-
-loss, acc = model.evaluate(test_data, batch_size=1)
-print(f"Test loss:{loss}, Test accuracy:{acc}")
-
-#----- Export to Tensorflow Lite Model -----#
-# After creating the model, convert and export it to a Tensorflow Lite model format for later use on an on-device application. 
-# The export also includes model metadata, which includes the label file.
-
-model.export_model()
-# !ls exported_model
-
-# files.download('exported_model/gesture_recognizer.task')
-
-"""## Run the model on-device
 
 To use the TFLite model for on-device usage through MediaPipe Tasks, refer to the Gesture Recognizer page: https://developers.google.com/mediapipe/solutions/vision/gesture_recognizer.
 
@@ -166,6 +69,107 @@ Additional `HParams` parameter that does not affect model accuracy:
 For example, the following trains a new model with the dropout_rate of 0.2 and learning rate of 0.003.
 """
 
+#@title License information
+# Copyright 2023 The MediaPipe Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+#
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+#----- Import the required libraries -----#
+
+import os
+import tensorflow as tf
+assert tf.__version__.startswith('2')
+
+from mediapipe_model_maker import gesture_recognizer
+
+import matplotlib.pyplot as plt
+
+#----- Import get data functions -----#
+
+from get_hagrid_data import get_hagrid_data
+from get_asl_data import get_asl_data
+
+
+#----- Get dataset path -----#
+
+home_path = os.path.expanduser("~")
+dataset_path = f"{home_path}/jester_data"
+
+
+#----- Call get data helper functions -----# 
+
+# get_hagrid_data()
+# get_asl_data()
+
+
+#----- Verify the labels -----# 
+
+# There should be 10 gesture labels, with one of them being the `none` gesture.
+
+print(dataset_path)
+labels = []
+for i in os.listdir(dataset_path):
+  if os.path.isdir(os.path.join(dataset_path, i)):
+    labels.append(i)
+print(labels)
+
+
+#----- Load Data -----#
+
+data = gesture_recognizer.Dataset.from_folder(
+    dirname=dataset_path,
+    hparams=gesture_recognizer.HandDataPreprocessingParams()
+)
+train_data, rest_data = data.split(0.8)
+validation_data, test_data = rest_data.split(0.5)
+
+
+#----- Train the model -----#
+
+# Train the custom gesture recognizer by using the create method and passing in the training data, validation data, model options, 
+# and hyperparameters. For more information on model options and hyperparameters, see the [Hyperparameters](#hyperparameters) section below.
+
+hparams = gesture_recognizer.HParams(export_dir="exported_model")
+options = gesture_recognizer.GestureRecognizerOptions(hparams=hparams)
+model = gesture_recognizer.GestureRecognizer.create(
+    train_data=train_data,
+    validation_data=validation_data,
+    options=options
+)
+
+
+#----- Evaluate the model performance -----#
+
+# After training the model, evaluate it on a test dataset and print the loss and accuracy metrics.
+
+loss, acc = model.evaluate(test_data, batch_size=1)
+print(f"Test loss:{loss}, Test accuracy:{acc}")
+
+
+#----- Export to Tensorflow Lite Model -----#
+
+# After creating the model, convert and export it to a Tensorflow Lite model format for later use on an on-device application. 
+# The export also includes model metadata, which includes the label file.
+
+model.export_model()
+# !ls exported_model
+
+# files.download('exported_model/gesture_recognizer.task')
+
+
+#----- Run the model on-device -----#
+
 hparams = gesture_recognizer.HParams(learning_rate=0.003, export_dir="exported_model_2")
 model_options = gesture_recognizer.ModelOptions(dropout_rate=0.2)
 options = gesture_recognizer.GestureRecognizerOptions(model_options=model_options, hparams=hparams)
@@ -175,7 +179,7 @@ model_2 = gesture_recognizer.GestureRecognizer.create(
     options=options
 )
 
-"""Evaluate the newly trained model."""
+#----- Evaluate the newly trained model -----#
 
 loss, accuracy = model_2.evaluate(test_data)
 print(f"Test loss:{loss}, Test accuracy:{accuracy}")
