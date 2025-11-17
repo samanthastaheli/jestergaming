@@ -21,8 +21,8 @@ def get_hagrid_data():
     print("Path to dataset files:", path)
 
     home_path = os.path.expanduser("~")
-    
-    os.makedirs(f"{home_path}/jester_data", exist_ok=True)
+    data_folder = f"{home_path}/jester_data"
+    os.makedirs(data_folder, exist_ok=True)
 
     folders_needed = {"train_val_peace_inverted": "menu", "train_val_three": "three", "train_val_four": "four", "train_val_palm": "five"}
 
@@ -31,7 +31,7 @@ def get_hagrid_data():
             print(f"\033[95mMoving images in {hagrid_folder} to {folders_needed[hagrid_folder]}.\033[0m")
 
             src_path = f"{path}/hagrid-sample-30k-384p/hagrid_30k/{hagrid_folder}/"
-            dst_path = f"data/{folders_needed[hagrid_folder]}"
+            dst_path = f"{data_folder}/{folders_needed[hagrid_folder]}"
 
             os.makedirs(dst_path, exist_ok=True)
             

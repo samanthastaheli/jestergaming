@@ -11,8 +11,8 @@ def get_asl_data():
   print("Path to dataset files:", path)
 
   home_path = os.path.expanduser("~")
-
-  os.makedirs("{home_path}/jester_data", exist_ok=True)
+  data_folder = f"{home_path}/jester_data"
+  os.makedirs(data_folder, exist_ok=True)
 
   #files needed (R, J, M, T, C)
   folders_needed = {"C":"tool","R":"action", "J":"journal", "M":"map", "T":"toolbar"}
@@ -22,7 +22,7 @@ def get_asl_data():
       print(f"\033[95mMoving images in {asl_folders} to {folders_needed[asl_folders]}.\033[0m")
 
       src_path = f"{path}/asl_alphabet_train/asl_alphabet_train/{asl_folders}/"
-      dst_path = f"data/{folders_needed[asl_folders]}"
+      dst_path = f"{data_folder}/{folders_needed[asl_folders]}"
 
       os.makedirs(dst_path, exist_ok=True)
       
