@@ -19,8 +19,10 @@ def get_hagrid_data():
     path = kagglehub.dataset_download("innominate817/hagrid-sample-30k-384p")
 
     print("Path to dataset files:", path)
+
+    home_path = os.path.expanduser("~")
     
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(f"{home_path}/jester_data", exist_ok=True)
 
     folders_needed = {"train_val_peace_inverted": "menu", "train_val_three": "three", "train_val_four": "four", "train_val_palm": "five"}
 
