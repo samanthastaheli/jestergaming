@@ -24,7 +24,16 @@ def get_hagrid_data():
     data_folder = f"{home_path}/jester_data"
     os.makedirs(data_folder, exist_ok=True)
 
-    folders_needed = {"train_val_peace_inverted": "menu", "train_val_three": "three", "train_val_four": "four", "train_val_palm": "five"}
+    folders_needed = {
+        "train_val_peace_inverted": "menu", 
+        "train_val_three": "three", 
+        "train_val_four": "four", 
+        "train_val_palm": "five",
+        "train_val_fist": "move",
+        "train_val_stop": "run",
+        "train_val_peace": "two",
+        "train_val_one": "one",
+    }
 
     for hagrid_folder in os.listdir(f"{path}/hagrid-sample-30k-384p/hagrid_30k"):
         if hagrid_folder in folders_needed.keys():
