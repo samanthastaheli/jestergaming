@@ -18,7 +18,8 @@ from mediapipe.tasks.python import vision
 model_path = "exported_model/gesture_recognizer.task"
 
 options = vision.GestureRecognizerOptions(
-    base_options=python.BaseOptions(model_asset_path=model_path)
+    base_options=python.BaseOptions(model_asset_path=model_path),
+    running_mode=vision.RunningMode.LIVE_STREAM,
 )
 
 recognizer = vision.GestureRecognizer.create_from_options(options)
@@ -92,7 +93,22 @@ def extract_keypoints(results):
 
     return np.concatenate([left_hand, right_hand])
 
+def on_result(result, input_image):
+    # Get OpenCV image from Mediapipe image
+    np_frame = input_image.numpy_view()
 
+    # Draw landmarks
+    if result.hand_landmarks:
+        for hand_landmarks in result.hand_landmarks:
+            draw_hand_landmarks(frame_to_show, hand_landmarks)
+
+    # Display top gesture
+    if result.gestures:
+        top_gesture = result.gestures[0][0]
+        label = f"{top_gesture.category_name} ({top_gesture.score:.2f})"
+        cv2.putText(frame_to_show, label, (10, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        
 #----- Webcam -----#
 
 # Source - https://stackoverflow.com/q
@@ -117,7 +133,7 @@ while cap.isOpened():
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
     # Make detections
-    result = recognizer.recognize(mp_image)
+    result = recognizer.recognize_async(mp_image)
     # top_gesture = result.gestures[0][0]
     # hand_landmarks = result.hand_landmarks
     # print(top_gesture)
