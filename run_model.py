@@ -26,6 +26,31 @@ recognizer = vision.GestureRecognizer.create_from_options(options)
 
 #----- Helper Functions -----#
 
+import cv2
+
+# Connections between landmarks, same as mp_hands.HAND_CONNECTIONS
+HAND_CONNECTIONS = [
+    (0,1),(1,2),(2,3),(3,4),
+    (0,5),(5,6),(6,7),(7,8),
+    (5,9),(9,10),(10,11),(11,12),
+    (9,13),(13,14),(14,15),(15,16),
+    (13,17),(17,18),(18,19),(19,20),
+    (0,17)
+]
+
+def draw_hand_landmarks(frame, hand_landmarks):
+    h, w, _ = frame.shape
+    # Draw points
+    points = []
+    for lm in hand_landmarks:
+        x, y = int(lm.x * w), int(lm.y * h)
+        points.append((x,y))
+        cv2.circle(frame, (x,y), 4, (0,255,0), -1)
+    # Draw connections
+    for start_idx, end_idx in HAND_CONNECTIONS:
+        cv2.line(frame, points[start_idx], points[end_idx], (0,0,255), 2)
+
+
 def draw_styled_landmarks(image, results):
     mp_drawing = mp.solutions.drawing_utils
     mp_holistic = mp.solutions.holistic
@@ -106,14 +131,7 @@ while cap.isOpened():
     # --------------------------
     if result.hand_landmarks:
       for hand_landmarks in result.hand_landmarks:
-          # Draw connections and landmarks
-          mp.solutions.drawing_utils.draw_landmarks(
-              frame,
-              hand_landmarks,               # landmarks
-              mp.solutions.hands.HAND_CONNECTIONS,    # connections between points
-              mp.solutions.drawing_utils.DrawingSpec(color=(0,255,0), thickness=2, circle_radius=4),
-              mp.solutions.drawing_utils.DrawingSpec(color=(0,0,255), thickness=2)
-          )
+          draw_hand_landmarks(frame, hand_landmarks)
 
     # Display top gesture label
     if result.gestures:
