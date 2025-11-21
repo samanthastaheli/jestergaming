@@ -51,13 +51,13 @@ def main():
             running_mode=vision.RunningMode.LIVE_STREAM,
             result_callback=motion_callback,
       )
-      motion_recognizer = vision.GestureRecognizer.create_from_options(options)
+      motion_recognizer = vision.GestureRecognizer.create_from_options(motion_options)
       action_options = vision.GestureRecognizerOptions(
             base_options=base_options,
             running_mode=vision.RunningMode.LIVE_STREAM,
             result_callback=action_callback,
       )
-      action_recognizer = vision.GestureRecognizer.create_from_options(options)
+      action_recognizer = vision.GestureRecognizer.create_from_options(action_options)
 
       cap = cv2.VideoCapture(0)
 
