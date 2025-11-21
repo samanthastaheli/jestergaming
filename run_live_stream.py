@@ -1,30 +1,54 @@
-#Code with comments
-import cv2 as cv
+import cv2
+import time
 import mediapipe as mp
-import numpy as np
-mpfacemesh = mp.solutions.face_mesh
-FaceMesh = mpfacemesh.FaceMesh(max_num_faces=1)
-mpdraw = mp.solutions.drawing_utils
-drawspec1 = mpdraw.DrawingSpec(color = (255,255,0), circle_radius = 0, thickness = 1)
-drawspec2 = mpdraw.DrawingSpec(color = (0,255,0), circle_radius = 0, thickness = 1)
-webcam = cv.VideoCapture(0)
-while True:
-  
- scc,img = webcam.read()
- img = cv.flip(img,1)
- h,w,c = img.shape
- blank_img = np.zeros((h,w,c), np.uint8)
- results = FaceMesh.process(img)
- 
- if results.multi_face_landmarks:
-  for face_lm in results.multi_face_landmarks:
-   img = blank_img
-   mpdraw.draw_landmarks(img,face_lm,
-         mpfacemesh.FACE_CONNECTIONS,
-         drawspec1,drawspec2)
- k = cv.waitKey(1)
- if k == ord('q'):
-  break
- cv.imshow('face mesh 3d', img)
-webcam.release()  
-cv.destroyAllWindows()
+from mediapipe.tasks.python import vision
+from mediapipe.tasks import python
+from mediapipe.framework.formats import landmark_pb2
+
+# Path to your .task model
+MODEL_PATH = "exported_model/gesture_recognizer.task"
+
+# This will be called every time results are ready
+def gesture_callback(result, output_image, timestamp_ms):
+      if result.gestures:
+            gesture = result.gestures[0][0]   # Top gesture
+            print(f"[{timestamp_ms}] Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+
+def main():
+      mp_image = mp.Image
+      base_options = python.BaseOptions(model_asset_path=MODEL_PATH)
+
+      # Configure recognizer for live stream mode
+      options = vision.GestureRecognizerOptions(
+            base_options=base_options,
+            running_mode=vision.RunningMode.LIVE_STREAM,
+            result_callback=gesture_callback,
+      )
+
+      recognizer = vision.GestureRecognizer.create_from_options(options)
+
+      cap = cv2.VideoCapture(0)
+      timestamp = 0
+
+      while cap.isOpened():
+            success, frame = cap.read()   
+            if not success:
+                  break
+
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
+            
+            timestamp = int(time.time() * 1000)   # ms
+            recognizer.recognize_async(mp_frame, timestamp)
+
+            cv2.imshow("Gesture Recognition", frame)
+            # Break gracefully
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                  break
+
+      cap.release()
+      recognizer.close()
+      cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
