@@ -1,7 +1,7 @@
 import pyautogui
 import keyboard
 import pygetwindow as gw
-from jestergaming.game_input import PressKey, ReleaseKey
+from game_input import PressKey, ReleaseKey
 import time
 
 print("starting")

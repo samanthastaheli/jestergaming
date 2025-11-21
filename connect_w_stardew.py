@@ -1,11 +1,17 @@
 import pyautogui
 import keyboard
 import pygetwindow as gw
-from jestergaming.game_input import PressKey, ReleaseKey
+from game_input import PressKey, ReleaseKey
 import time
 
 print("starting")
 time.sleep(3)
+
+input_types = ["up_right", "right", "down_right", "down_left", "left", "up_left"]
+i=0
+
+move_input = "none"
+action_input = "none"
 
 try:
     game_window = gw.getWindowsWithTitle('Stardew Valley')[0]
@@ -13,13 +19,10 @@ try:
     print("found window")
 except IndexError:
     print("couldn't find it")
-
 while True:
     if keyboard.is_pressed('esc'):
         print("stopped")
         break
-    
-    
 
     ######## INPUT CODES #########
     # Left click = 0x01
@@ -43,77 +46,93 @@ while True:
     # 8 = 0x38
     # 9 = 0x39
 
-    match input:
-        case "move":
-            match input_type:
-                case "up": #W
-                    PressKey(0x57)
-                    time.sleep(.3)
-                    ReleaseKey(0x57)
-                case "down": #S
-                    PressKey(0x53)
-                    time.sleep(.3)
-                    ReleaseKey(0x53)
-                case "left": #A
-                    PressKey(0x41)
-                    time.sleep(.3)
-                    ReleaseKey(0x41)
-                case "right": #D
-                    PressKey(0x44)
-                    time.sleep(.3)
-                    ReleaseKey(0x44)
+
+    #Match camera output to input key
+
+    move_input = input_types[i]
+    move_key = 0x00
+    move_key2 = 0x00
+    action_key=0x00
+
+
+
+    #Left half of screen = movement
+    match move_input:
+        case "up": #W
+            move_key=0x57
+        case "down": #S
+            move_key=0x53
+        case "left": #A
+            move_key=0x41
+        case "right": #D
+            move_key=0x44
+        case "up_right":
+            move_key=0x57
+            move_key2=0x44
+        case "up_left":
+            move_key=0x57
+            move_key2=0x41
+        case "down_right":
+            move_key=0x53
+            move_key2=0x44
+        case "down_left":
+            move_key=0x53
+            move_key2=0x41
+        case _:
+            move_key=0x00
+            move_key2=0x00
+                
+    #right half of the screen = actions
+    match action_input:
         case "tool":
-            PressKey(0x01)
-            time.sleep(.3)
-            ReleaseKey(0x01)
+            action_key=0x01
         case "action":
-            PressKey(0x02)
-            time.sleep(.3)
-            ReleaseKey(0x02)
+            action_key=0x02
         case "menu":
-            PressKey(0x1B)
-            time.sleep(.3)
-            ReleaseKey(0x1B)
-        case "journal":
-            PressKey(0x46)
-            time.sleep(.3)
-            ReleaseKey(0x46)
-        case "map":
-            PressKey(0x4D)
-            time.sleep(.3)
-            ReleaseKey(0x4D)
-        case "toolbar":
-            PressKey(0x09)
-            time.sleep(.3)
-            ReleaseKey(0x09)
+            action_key=0x1B
         case "1":
-            PressKey(0x31)
-            time.sleep(.3)
-            ReleaseKey(0x31)
+            action_key=0x31
         case "2":
-            PressKey(0x32)
-            time.sleep(.3)
-            ReleaseKey(0x32)
+            action_key=0x32
         case "3":
-            PressKey(0x33)
-            time.sleep(.3)
-            ReleaseKey(0x33)
+            action_key=0x33
         case "4":
-            PressKey(0x34)
-            time.sleep(.3)
-            ReleaseKey(0x34)
+            action_key=0x34
         case "5":
-            PressKey(0x35)
-            time.sleep(.3)
-            ReleaseKey(0x35)
+            action_key=0x35
+        case "journal":
+            action_key=0x46
+        case "map":
+            action_key=0x4D
+        case "toolbar":
+            action_key=0x09
+        case _:
+            action_key=0x00
+
+    if(move_key!=0x00):
+        PressKey(move_key)
+        if (move_key2!=0x00):
+            PressKey(move_key2)
+        time.sleep(.3)
+        ReleaseKey(move_key)
+        if (move_key2!=0x00):
+            ReleaseKey(move_key2)
+
+    if(action_key!=0x00):
+        PressKey(action_key)
+        time.sleep(.3)
+        ReleaseKey(action_key)
+
+        
+
+    move_key=0x00
+    action_key=0x00
 
 
-    # PressKey(0x46)#pyautogui.press('f')
-    # print("pressed f")
-    # time.sleep(3)
-    # ReleaseKey(0x46)
-    
-    # PressKey(0x01)#pyautogui.click()  
-    # print("left click")
-    # time.sleep(3)
-    # ReleaseKey(0x01)
+    i+=1
+    i=i%6
+
+    if(i==0):
+        action_input="tool"
+    else:
+        action_input="none"
