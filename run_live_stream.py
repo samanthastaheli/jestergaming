@@ -98,7 +98,8 @@ def main():
                   break
 
       cap.release()
-      recognizer.close()
+      motion_recognizer.close()
+      action_recognizer.close()
       cv2.destroyAllWindows()
 
 if __name__ == "__main__":
