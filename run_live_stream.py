@@ -66,7 +66,6 @@ def frame_to_mp_image(frame):
 
 
 def split_frame(frame, hand_type):
-      frame = cv2.flip(frame, 1) # flip to have correct right/left sides
 
       _, w = frame.shape[:2]
 
@@ -118,6 +117,7 @@ def main(hand_type):
 
       while cap.isOpened():
             success, frame = cap.read()   
+            frame = cv2.flip(frame, 1) # flip to have correct right/left sides
 
             if not success:
                   break
