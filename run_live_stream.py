@@ -13,7 +13,8 @@ from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
 
 # Path to .task model
-MODEL_PATH = "exported_model/gesture_recognizer.task"
+ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
+MOVE_MODEL_PATH = "exported_model/movement_gesture_recognizer.task"
 
 QUIT_KEY = 'q'
 
@@ -87,17 +88,15 @@ def split_frame(frame, hand_type):
 
 def main(hand_type):
       # Get models
-      base_options = python.BaseOptions(model_asset_path=MODEL_PATH)
-
       # Configure recognizer for live stream mode
       motion_options = vision.GestureRecognizerOptions(
-            base_options=base_options,
+            base_options=python.BaseOptions(model_asset_path=MOVE_MODEL_PATH),
             running_mode=vision.RunningMode.LIVE_STREAM,
             result_callback=motion_callback,
       )
       motion_recognizer = vision.GestureRecognizer.create_from_options(motion_options)
       action_options = vision.GestureRecognizerOptions(
-            base_options=base_options,
+            base_options=python.BaseOptions(model_asset_path=ACTION_MODEL_PATH),
             running_mode=vision.RunningMode.LIVE_STREAM,
             result_callback=action_callback,
       )
