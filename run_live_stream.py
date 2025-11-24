@@ -7,11 +7,15 @@ import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
+from connect_w_stardew import connect_to_window, control_game
 
-# Path to your .task model
-MODEL_PATH = "exported_model/gesture_recognizer.task"
+# Path to .task model
+ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
+MOVE_MODEL_PATH = "exported_model/movement_gesture_recognizer.task"
 
 QUIT_KEY = 'q'
+
+# Update in callbacks
 MOTION = "none"
 M_SCORE = 0.0
 ACTION = "none"
@@ -58,7 +62,6 @@ def resize_with_aspect_ratio(image, target_width, target_height):
     canvas[y_offset:y_offset+new_h, x_offset:x_offset+new_w] = resized
     return canvas
 
-
 def frame_to_mp_image(frame):
       frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
       mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
@@ -66,7 +69,6 @@ def frame_to_mp_image(frame):
 
 
 def split_frame(frame, hand_type):
-      frame = cv2.flip(frame, 1) # flip to have correct right/left sides
 
       _, w = frame.shape[:2]
 
@@ -120,18 +122,19 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
 
 # region main
 def main(hand_type):
-      # Get models
-      base_options = python.BaseOptions(model_asset_path=MODEL_PATH)
+      # connect to the stardew game instance
+      connect_to_window()
 
+      # Get models
       # Configure recognizer for live stream mode
       motion_options = vision.GestureRecognizerOptions(
-            base_options=base_options,
+            base_options=python.BaseOptions(model_asset_path=MOVE_MODEL_PATH),
             running_mode=vision.RunningMode.LIVE_STREAM,
             result_callback=motion_callback,
       )
       motion_recognizer = vision.GestureRecognizer.create_from_options(motion_options)
       action_options = vision.GestureRecognizerOptions(
-            base_options=base_options,
+            base_options=python.BaseOptions(model_asset_path=ACTION_MODEL_PATH),
             running_mode=vision.RunningMode.LIVE_STREAM,
             result_callback=action_callback,
       )
@@ -150,8 +153,9 @@ def main(hand_type):
       timestamp = 0
 
       while cap.isOpened():
-            success, frame = cap.read()   
-
+            success, frame = cap.read()
+            frame = cv2.flip(frame, 1) # flip to have correct right/left sides
+  
             if not success:
                   break
 
@@ -166,6 +170,7 @@ def main(hand_type):
             frame_display = resize_with_aspect_ratio(frame, win_w, win_h)
 
             add_frame_details(frame_display, win_x, win_y, win_w, win_h)
+            control_game(MOTION, ACTION)
 
             # Display image in cv2 window 
             cv2.imshow("Gesture Recognition", frame_display)

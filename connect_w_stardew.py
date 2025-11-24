@@ -13,16 +13,19 @@ i=0
 move_input = "none"
 action_input = "none"
 
-try:
-    game_window = gw.getWindowsWithTitle('Stardew Valley')[0]
-    game_window.activate()
-    print("found window")
-except IndexError:
-    print("couldn't find it")
-while True:
-    if keyboard.is_pressed('esc'):
-        print("stopped")
-        break
+def connect_to_window():
+    try:
+        game_window = gw.getWindowsWithTitle('Stardew Valley')[0]
+        game_window.activate()
+        print("found window")
+    except IndexError:
+        print("couldn't find it")
+
+def control_game(move_input, action_input):
+# while True:
+#     if keyboard.is_pressed('esc'):
+#         print("stopped")
+#         break
 
     ######## INPUT CODES #########
     # Left click = 0x01
@@ -49,7 +52,7 @@ while True:
 
     #Match camera output to input key
 
-    move_input = input_types[i]
+    # move_input = input_types[i]
     move_key = 0x00
     move_key2 = 0x00
     action_key=0x00
@@ -125,14 +128,14 @@ while True:
 
         
 
-    move_key=0x00
-    action_key=0x00
+    # move_key=0x00
+    # action_key=0x00
 
 
-    i+=1
-    i=i%6
+    # i+=1
+    # i=i%6
 
-    if(i==0):
-        action_input="tool"
-    else:
-        action_input="none"
+    # if(i==0):
+    #     action_input="tool"
+    # else:
+    #     action_input="none"
