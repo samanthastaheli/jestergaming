@@ -29,8 +29,8 @@ import time
 print("starting")
 time.sleep(3)
 
-actions = {"tool":0x01,
-           "holdTool":0x01,
+actions = { "tool":0x01,
+            "holdTool":0x01,
             "action":0x02,
             "menu":0x1B,
             "one":0x31,
@@ -43,7 +43,19 @@ actions = {"tool":0x01,
             "toolbar":0x09,
             "none":0x00,
             "":0x00
-        }
+            }
+
+movements = {   "up": [0x57,0x00],
+                "down":[0x53,0x00],
+                "left":[0x41,0x00],
+                "right":[0x44,0x00],
+                "up_right":[0x57,0x44],
+                "down_right":[0x53,0x44],
+                "up_left":[0x57,0x41],
+                "down_left":[0x53,0x41],
+                "none":[0x00,0x00],
+                "":[0x00,0x00]
+                }
 
 move_input = "none"
 action_input = "none"
@@ -60,7 +72,6 @@ def control_game(move_input, action_input):
     move_key = 0x00
     move_key2 = 0x00
     action_key=0x00
-
     #Left half of screen = movement
     match move_input:
         case "up": #W
@@ -139,3 +150,19 @@ def release_action(action_input):
                 
     if(action_key!=0x00):
         ReleaseKey(action_key)
+
+def press_movement(move_input):
+    move_key1,move_key2=actions[move_input]
+                
+    if(move_key1!=0x00):
+        PressKey(move_key1)
+    if(move_key2!=0x00):
+        PressKey(move_key2)
+
+def release_movement(move_input):
+    move_key1,move_key2=actions[move_input]
+                
+    if(move_key1!=0x00):
+        ReleaseKey(move_key1)
+    if(move_key2!=0x00):
+        ReleaseKey(move_key2)

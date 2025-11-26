@@ -19,6 +19,8 @@ QUIT_KEY = 'q'
 MOTION = "none"
 MOTION_DEFAULT = "none"
 PREVIOUS_MOTION = "none"
+M_X = 0.00
+M_Y = 0.00
 M_SCORE = 0.0
 M_SCORE_DEFAULT = 0.0
 ACTION = "none"
@@ -32,12 +34,21 @@ A_SCORE_DEFAULT = 0.0
 
 def motion_callback(result, output_image, timestamp_ms):
     """This will be called every time results are ready."""
-    global MOTION, M_SCORE 
+    global MOTION, M_SCORE, M_X, M_Y 
     if result.gestures:
-        gesture = result.gestures[0][0]   # Top gesture
-        MOTION = gesture.category_name
-        M_SCORE = gesture.score
-        print(f"[{timestamp_ms}] Motion Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+      gesture = result.gestures[0][0]   # Top gesture
+      MOTION = gesture.category_name
+      M_SCORE = gesture.score
+      print(f"[{timestamp_ms}] Motion Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+      if result.hand_landmarks:
+            landmarks = result.hand_landmarks[0]
+
+            palm = landmarks[9]
+            M_X = palm.x
+            M_Y = palm.y
+
+            print("X: ", palm.x)
+            print("Y: ", palm.y)
     else:
         MOTION = MOTION_DEFAULT
         M_SCORE = M_SCORE_DEFAULT
@@ -195,6 +206,12 @@ def main(hand_type):
             # Resize to correct aspect ratio 
             win_x, win_y, win_w, win_h = cv2.getWindowImageRect("Gesture Recognition")
             frame_display = resize_with_aspect_ratio(frame, win_w, win_h)
+
+            pixel_x = int(M_X * win_w)//2
+            pixel_y = int(M_Y * win_h)
+
+            print("Gesture pixel location:", pixel_x, pixel_y)
+            cv2.circle(frame_display, (pixel_x,pixel_y), 8, (0,0,255), -1)
 
             add_frame_details(frame_display, win_x, win_y, win_w, win_h)
 
