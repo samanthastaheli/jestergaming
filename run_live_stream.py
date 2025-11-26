@@ -7,7 +7,7 @@ import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
-from connect_w_stardew import connect_to_window, control_game
+from connect_w_stardew import connect_to_window, control_game, press_action, release_action
 
 # Path to .task model
 ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
@@ -17,9 +17,16 @@ QUIT_KEY = 'q'
 
 # Update in callbacks
 MOTION = "none"
+MOTION_DEFAULT = "none"
+PREVIOUS_MOTION = "none"
 M_SCORE = 0.0
+M_SCORE_DEFAULT = 0.0
 ACTION = "none"
+ACTION_DEFAULT = "none"
+PREVIOUS_ACTION = "none"
 A_SCORE = 0.0
+A_SCORE_DEFAULT = 0.0
+
 
 # region Async Callback Functions 
 
@@ -31,6 +38,9 @@ def motion_callback(result, output_image, timestamp_ms):
         MOTION = gesture.category_name
         M_SCORE = gesture.score
         print(f"[{timestamp_ms}] Motion Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+    else:
+        MOTION = MOTION_DEFAULT
+        M_SCORE = M_SCORE_DEFAULT
 
 
 def action_callback(result, output_image, timestamp_ms):
@@ -41,6 +51,9 @@ def action_callback(result, output_image, timestamp_ms):
         ACTION = gesture.category_name
         A_SCORE = gesture.score
         print(f"[{timestamp_ms}] Action Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+    else:
+        ACTION = ACTION_DEFAULT
+        A_SCORE = A_SCORE_DEFAULT
 
 # endregion
 
@@ -118,7 +131,21 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
     #Print Action Score
     cv2.putText(frame_display, f"Percent Accuracy: {A_SCORE * 100:.0f}%", action_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
 
+def play_game():
+      global PREVIOUS_ACTION
 
+      ##previous function call
+      # control_game(MOTION, ACTION)
+
+      ##attempt at actions
+      if PREVIOUS_ACTION != ACTION:
+           release_action(PREVIOUS_ACTION)
+      #      time.sleep(.3)
+           press_action(ACTION)
+      PREVIOUS_ACTION = ACTION
+
+      # PREVIOUS_MOTION = MOTION
+      
 
 # region main
 def main(hand_type):
@@ -170,7 +197,9 @@ def main(hand_type):
             frame_display = resize_with_aspect_ratio(frame, win_w, win_h)
 
             add_frame_details(frame_display, win_x, win_y, win_w, win_h)
-            control_game(MOTION, ACTION)
+
+            play_game()
+
 
             # Display image in cv2 window 
             cv2.imshow("Gesture Recognition", frame_display)

@@ -4,30 +4,7 @@ import pygetwindow as gw
 from game_input import PressKey, ReleaseKey
 import time
 
-print("starting")
-time.sleep(3)
-
-input_types = ["up_right", "right", "down_right", "down_left", "left", "up_left"]
-i=0
-
-move_input = "none"
-action_input = "none"
-
-def connect_to_window():
-    try:
-        game_window = gw.getWindowsWithTitle('Stardew Valley')[0]
-        game_window.activate()
-        print("found window")
-    except IndexError:
-        print("couldn't find it")
-
-def control_game(move_input, action_input):
-# while True:
-#     if keyboard.is_pressed('esc'):
-#         print("stopped")
-#         break
-
-    ######## INPUT CODES #########
+ ######## INPUT CODES #########
     # Left click = 0x01
     # Right click = 0x02
     # Escape = 0x1B
@@ -49,15 +26,40 @@ def control_game(move_input, action_input):
     # 8 = 0x38
     # 9 = 0x39
 
+print("starting")
+time.sleep(3)
 
-    #Match camera output to input key
+actions = {"tool":0x01,
+           "holdTool":0x01,
+            "action":0x02,
+            "menu":0x1B,
+            "one":0x31,
+            "two":0x32,
+            "three":0x33,
+            "four":0x34,
+            "five":0x35,
+            "journal": 0x46,
+            "map": 0x4D,
+            "toolbar":0x09,
+            "none":0x00,
+            "":0x00
+        }
 
-    # move_input = input_types[i]
+move_input = "none"
+action_input = "none"
+
+def connect_to_window():
+    try:
+        game_window = gw.getWindowsWithTitle('Stardew Valley')[0]
+        game_window.activate()
+        print("found window")
+    except IndexError:
+        print("couldn't find it")
+
+def control_game(move_input, action_input):
     move_key = 0x00
     move_key2 = 0x00
     action_key=0x00
-
-
 
     #Left half of screen = movement
     match move_input:
@@ -93,15 +95,15 @@ def control_game(move_input, action_input):
             action_key=0x02
         case "menu":
             action_key=0x1B
-        case "1":
+        case "one":
             action_key=0x31
-        case "2":
+        case "two":
             action_key=0x32
-        case "3":
+        case "three":
             action_key=0x33
-        case "4":
+        case "four":
             action_key=0x34
-        case "5":
+        case "five":
             action_key=0x35
         case "journal":
             action_key=0x46
@@ -126,16 +128,14 @@ def control_game(move_input, action_input):
         time.sleep(.3)
         ReleaseKey(action_key)
 
-        
+def press_action(action_input):
+    action_key=actions[action_input]
+                
+    if(action_key!=0x00):
+        PressKey(action_key)
 
-    # move_key=0x00
-    # action_key=0x00
-
-
-    # i+=1
-    # i=i%6
-
-    # if(i==0):
-    #     action_input="tool"
-    # else:
-    #     action_input="none"
+def release_action(action_input):
+    action_key=actions[action_input]
+                
+    if(action_key!=0x00):
+        ReleaseKey(action_key)
