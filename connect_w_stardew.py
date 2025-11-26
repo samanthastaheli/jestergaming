@@ -151,16 +151,18 @@ def release_action(action_input):
     if(action_key!=0x00):
         ReleaseKey(action_key)
 
-def press_movement(move_input):
-    move_key1,move_key2=actions[move_input]
+def press_movement(move_x, move_y):
+    move_key1,_=movements[move_x]
+    move_key2,_=movements[move_y]
                 
     if(move_key1!=0x00):
         PressKey(move_key1)
     if(move_key2!=0x00):
         PressKey(move_key2)
 
-def release_movement(move_input):
-    move_key1,move_key2=actions[move_input]
+def release_movement(move_x, move_y):
+    move_key1,_=movements[move_x]
+    move_key2,_=movements[move_y]
                 
     if(move_key1!=0x00):
         ReleaseKey(move_key1)

@@ -7,7 +7,7 @@ import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
-from connect_w_stardew import connect_to_window, control_game, press_action, release_action
+from connect_w_stardew import connect_to_window, control_game, press_action, release_action, press_movement, release_movement
 
 # Path to .task model
 ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
@@ -125,7 +125,7 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
     cv2.line(frame_display, (0,x_axis_y), (w//2,x_axis_y), motion_color, 4) #x-axis line
     cv2.line(frame_display, (y_axis_x//2, win_y*4), (y_axis_x//2, h-(win_y*4)), motion_color, 4) #y-axis line
     #Print Motion Type
-    cv2.putText(frame_display, f"Motion: {MOTION}", motion_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
+#     cv2.putText(frame_display, f"Motion: {MOTION}", motion_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
     #Print Motion Score 
     cv2.putText(frame_display, f"Percent Accuracy: {M_SCORE * 100:.0f}%", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
 
@@ -142,6 +142,15 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
     #Print Action Score
     cv2.putText(frame_display, f"Percent Accuracy: {A_SCORE * 100:.0f}%", action_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
 
+def add_motion_dot(frame_display,win_w,win_h):
+      pixel_x = int(M_X * win_w)//2
+      pixel_y = int(M_Y * win_h)
+
+      # print("Gesture pixel location:", pixel_x, pixel_y)
+      cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
+      cv2.putText(frame_display, f"Location: {pixel_x} {pixel_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
+
+
 def play_game():
       global PREVIOUS_ACTION
 
@@ -155,8 +164,39 @@ def play_game():
            press_action(ACTION)
       PREVIOUS_ACTION = ACTION
 
+      #attempt at motion
+      motion_x, motion_y = motion_control()
+      press_movement(motion_x, motion_y)
+      time.sleep(.2)
+      release_movement(motion_x, motion_y)
       # PREVIOUS_MOTION = MOTION
-      
+
+def motion_control():
+      #normalize pixel coordinates
+      palm_x = M_X
+      palm_y = M_Y
+      center_radius = .20
+
+      dx = palm_x - 0.5
+      dy = palm_y - 0.5
+
+      motion_x = MOTION_DEFAULT
+      motion_y = MOTION_DEFAULT
+
+      #left right
+      if abs(dx) < center_radius: 
+            motion_x = MOTION_DEFAULT
+      else:
+            motion_x = "right" if dx > 0 else "left"
+
+      #up down
+      if abs(dy) < center_radius:
+            motion_y = MOTION_DEFAULT
+      else:
+            motion_y = "down" if dy > 0 else "up"
+
+      return motion_x,motion_y
+           
 
 # region main
 def main(hand_type):
@@ -207,12 +247,7 @@ def main(hand_type):
             win_x, win_y, win_w, win_h = cv2.getWindowImageRect("Gesture Recognition")
             frame_display = resize_with_aspect_ratio(frame, win_w, win_h)
 
-            pixel_x = int(M_X * win_w)//2
-            pixel_y = int(M_Y * win_h)
-
-            print("Gesture pixel location:", pixel_x, pixel_y)
-            cv2.circle(frame_display, (pixel_x,pixel_y), 8, (0,0,255), -1)
-
+            add_motion_dot(frame_display,win_w,win_h)
             add_frame_details(frame_display, win_x, win_y, win_w, win_h)
 
             play_game()
