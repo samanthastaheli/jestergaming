@@ -29,18 +29,18 @@ import time
 print("starting")
 time.sleep(3)
 
-actions = { "tool":0x01,
-            "holdTool":0x01,
-            "action":0x02,
-            "menu":0x1B,
-            "one":0x31,
-            "two":0x32,
-            "three":0x33,
-            "four":0x34,
-            "five":0x35,
-            "journal": 0x46,
-            "map": 0x4D,
-            "toolbar":0x09,
+actions = { "tool":0x01, #click once
+            "holdTool":0x01, #hold command
+            "action":0x02, #click once
+            "menu":0x1B, #switch to mouse input
+            "one":0x31, #click once
+            "two":0x32, #click once
+            "three":0x33, #click once
+            "four":0x34, #click once
+            "five":0x35, #click once
+            "journal": 0x46, #switch to mouse input
+            "map": 0x4D, #hold
+            "toolbar":0x09,#click once
             "none":0x00,
             "":0x00
             }

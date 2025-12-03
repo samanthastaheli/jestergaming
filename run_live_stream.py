@@ -9,6 +9,7 @@ from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
 from connect_w_stardew import connect_to_window, control_game, press_action, release_action, press_movement, release_movement
 from motion_sm import call_motion_state
+from action_sm import call_action_state
 
 # Path to .task model
 ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
@@ -157,17 +158,26 @@ def play_game():
       ##previous function call
       # control_game(MOTION, ACTION)
 
-      ##attempt at actionss
+      #attempt at actionss
+      call_action_state(ACTION)
       # if PREVIOUS_ACTION != ACTION:
       #      release_action(PREVIOUS_ACTION)
       #      time.sleep(.3)
       #      press_action(ACTION)
       # PREVIOUS_ACTION = ACTION
 
-      #attempt at motion
+      #grab x-axis and y-axis movement inputs
       motion_x, motion_y = motion_control()
 
-      call_motion_state(motion_x,motion_y)
+      #state machine for motion
+      #if certain action, disable motion
+      if MOTION == "move":
+            call_motion_state(motion_x,motion_y)
+      elif ACTION in ["journal", "menu", "map"]:
+            call_motion_state("none","none")
+      else:
+            call_motion_state("none","none")
+
       # press_movement(motion_x, motion_y)
       # time.sleep(.2)
       # release_movement(motion_x, motion_y)
