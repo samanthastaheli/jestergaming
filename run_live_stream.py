@@ -8,6 +8,7 @@ from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
 from connect_w_stardew import connect_to_window, control_game, press_action, release_action, press_movement, release_movement
+from motion_sm import call_motion_state
 
 # Path to .task model
 ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
@@ -157,18 +158,19 @@ def play_game():
       ##previous function call
       # control_game(MOTION, ACTION)
 
-      ##attempt at actions
-      if PREVIOUS_ACTION != ACTION:
-           release_action(PREVIOUS_ACTION)
+      ##attempt at actionss
+      # if PREVIOUS_ACTION != ACTION:
+      #      release_action(PREVIOUS_ACTION)
       #      time.sleep(.3)
-           press_action(ACTION)
-      PREVIOUS_ACTION = ACTION
+      #      press_action(ACTION)
+      # PREVIOUS_ACTION = ACTION
 
       #attempt at motion
       motion_x, motion_y = motion_control()
-      press_movement(motion_x, motion_y)
-      time.sleep(.2)
-      release_movement(motion_x, motion_y)
+      call_motion_state(motion_x,motion_y)
+      # press_movement(motion_x, motion_y)
+      # time.sleep(.2)
+      # release_movement(motion_x, motion_y)
       # PREVIOUS_MOTION = MOTION
 
 def motion_control():
