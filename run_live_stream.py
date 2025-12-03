@@ -41,7 +41,7 @@ def motion_callback(result, output_image, timestamp_ms):
       gesture = result.gestures[0][0]   # Top gesture
       MOTION = gesture.category_name
       M_SCORE = gesture.score
-      print(f"[{timestamp_ms}] Motion Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+      # print(f"[{timestamp_ms}] Motion Gesture: {gesture.category_name} (score={gesture.score:.2f})")
       if result.hand_landmarks:
             landmarks = result.hand_landmarks[0]
 
@@ -49,8 +49,8 @@ def motion_callback(result, output_image, timestamp_ms):
             M_X = palm.x
             M_Y = palm.y
 
-            print("X: ", palm.x)
-            print("Y: ", palm.y)
+            # print("X: ", palm.x)
+            # print("Y: ", palm.y)
     else:
         MOTION = MOTION_DEFAULT
         M_SCORE = M_SCORE_DEFAULT
@@ -63,7 +63,7 @@ def action_callback(result, output_image, timestamp_ms):
         gesture = result.gestures[0][0]   # Top gesture
         ACTION = gesture.category_name
         A_SCORE = gesture.score
-        print(f"[{timestamp_ms}] Action Gesture: {gesture.category_name} (score={gesture.score:.2f})")
+      #   print(f"[{timestamp_ms}] Action Gesture: {gesture.category_name} (score={gesture.score:.2f})")
     else:
         ACTION = ACTION_DEFAULT
         A_SCORE = A_SCORE_DEFAULT
@@ -159,7 +159,7 @@ def play_game():
       # control_game(MOTION, ACTION)
 
       #attempt at actionss
-      call_action_state(ACTION)
+      call_action_state(ACTION,"none","none")
       # if PREVIOUS_ACTION != ACTION:
       #      release_action(PREVIOUS_ACTION)
       #      time.sleep(.3)
