@@ -130,7 +130,6 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
     #Print Motion Score 
     cv2.putText(frame_display, f"Percent Accuracy: {M_SCORE * 100:.0f}%", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
 
-
     #line to split screen
     cv2.line(frame_display, (y_axis_x,0), (y_axis_x,win_h), (255,102,178), 3) #y-axis line
 
@@ -149,7 +148,7 @@ def add_motion_dot(frame_display,win_w,win_h):
 
       # print("Gesture pixel location:", pixel_x, pixel_y)
       cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
-      cv2.putText(frame_display, f"Location: {pixel_x} {pixel_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
+      # cv2.putText(frame_display, f"Location: {pixel_x} {pixel_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
 
 
 def play_game():
@@ -167,11 +166,13 @@ def play_game():
 
       #attempt at motion
       motion_x, motion_y = motion_control()
+
       call_motion_state(motion_x,motion_y)
       # press_movement(motion_x, motion_y)
       # time.sleep(.2)
       # release_movement(motion_x, motion_y)
       # PREVIOUS_MOTION = MOTION
+      return motion_x,motion_y
 
 def motion_control():
       #normalize pixel coordinates
@@ -252,7 +253,8 @@ def main(hand_type):
             add_motion_dot(frame_display,win_w,win_h)
             add_frame_details(frame_display, win_x, win_y, win_w, win_h)
 
-            play_game()
+            motion_x, motion_y = play_game()
+            cv2.putText(frame_display, f"Motion: {motion_x} {motion_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
 
 
             # Display image in cv2 window 
