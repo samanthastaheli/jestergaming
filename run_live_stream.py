@@ -159,7 +159,8 @@ def play_game():
       # control_game(MOTION, ACTION)
 
       #attempt at actionss
-      call_action_state(ACTION,"none","none")
+      if A_SCORE > 0.75:
+            call_action_state(ACTION,"none","none")
       # if PREVIOUS_ACTION != ACTION:
       #      release_action(PREVIOUS_ACTION)
       #      time.sleep(.3)
