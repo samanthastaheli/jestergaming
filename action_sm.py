@@ -13,6 +13,7 @@ TOOL_INDEX = 1
 FIRST_HOLD = 1
 DEBOUNCE_CLICK = []
 RELEASE_NEXT = False
+RELEASE_MENU = False
 
 
 def call_action_state(action, motion_x, motion_y):
@@ -80,7 +81,10 @@ def no_action(action):
         elif action in ["menu", "journal"]:
             HOLD_ACTION = action
             press_action(CURRENT_ACTION)
+            # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
+        elif action == "two":
+            return
         else:
             if CURRENT_ACTION != CLICK_ACTION:
                 CURRENT_STATE = "click"
@@ -128,9 +132,15 @@ def holdTool(action):
         CURRENT_STATE = "release"
 
 def mouse_control(action, motion_x, motion_y):
-    global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION 
-
+    global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION, RELEASE_MENU 
+    # press_action(HOLD_ACTION)
     print("MOUSE STATE ---------------------------------")
+
+    if RELEASE_MENU == True:
+        press_action(HOLD_ACTION)
+        CURRENT_STATE = "release"
+        RELEASE_MENU = False
+        return
     move = False
     x_offset = 0
     y_offset = 0
@@ -162,8 +172,10 @@ def mouse_control(action, motion_x, motion_y):
     if action == "two":
         print("here")
         print(HOLD_ACTION)
-        press_action(HOLD_ACTION)
-        CURRENT_STATE = "release"
+        # press_action(HOLD_ACTION)
+        release_action(HOLD_ACTION)
+        # press_action(HOLD_ACTION)
+        RELEASE_MENU = True
 
 def release(action):
     global CURRENT_STATE, CURRENT_ACTION, INDEX, FIRST_HOLD
