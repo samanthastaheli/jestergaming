@@ -16,6 +16,8 @@ ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
 MOVE_MODEL_PATH = "exported_model/movement_gesture_recognizer.task"
 
 QUIT_KEY = 'q'
+START_KEY = 's'
+WINDOW_NAME = "Jester Gaming"
 
 # Update in callbacks
 MOTION = "none"
@@ -109,6 +111,27 @@ def split_frame(frame, hand_type):
             action_image = frame_to_mp_image(right_half)
 
       return motion_image, action_image
+
+def get_models():
+      """
+      Get motion and action models.
+      """
+      # Get models
+      # Configure recognizer for live stream mode
+      motion_options = vision.GestureRecognizerOptions(
+            base_options=python.BaseOptions(model_asset_path=MOVE_MODEL_PATH),
+            running_mode=vision.RunningMode.LIVE_STREAM,
+            result_callback=motion_callback,
+      )
+      motion_recognizer = vision.GestureRecognizer.create_from_options(motion_options)
+      action_options = vision.GestureRecognizerOptions(
+            base_options=python.BaseOptions(model_asset_path=ACTION_MODEL_PATH),
+            running_mode=vision.RunningMode.LIVE_STREAM,
+            result_callback=action_callback,
+      )
+      action_recognizer = vision.GestureRecognizer.create_from_options(action_options)
+
+      return motion_recognizer, action_recognizer
 
 # endregion
 
@@ -211,43 +234,36 @@ def motion_control():
 
       return motion_x,motion_y
            
+# region start up page
 
-# region main
-def main(hand_type):
+def start_up_page():
+      """
+      Creates start page for live stream window.
+      """
+      # Display start up page in window
+      # Button for continuing to web cam page 
+
+# endregion
+
+# region web cam
+
+def start_live_stream(hand_type):
+      """
+      Creates models and window for live connection to web cam.
+      """
       # connect to the stardew game instance
       connect_to_window()
 
-      # Get models
-      # Configure recognizer for live stream mode
-      motion_options = vision.GestureRecognizerOptions(
-            base_options=python.BaseOptions(model_asset_path=MOVE_MODEL_PATH),
-            running_mode=vision.RunningMode.LIVE_STREAM,
-            result_callback=motion_callback,
-      )
-      motion_recognizer = vision.GestureRecognizer.create_from_options(motion_options)
-      action_options = vision.GestureRecognizerOptions(
-            base_options=python.BaseOptions(model_asset_path=ACTION_MODEL_PATH),
-            running_mode=vision.RunningMode.LIVE_STREAM,
-            result_callback=action_callback,
-      )
-      action_recognizer = vision.GestureRecognizer.create_from_options(action_options)
+      motion_recognizer, action_recognizer = get_models()
 
       cap = cv2.VideoCapture(0)
-
-      # Window setup
-      cv2.namedWindow("Gesture Recognition", cv2.WINDOW_NORMAL)
-      screen_width, screen_height = pyautogui.size()
-      window_w = screen_width // 2
-      window_h = int(screen_height * 0.9)
-      cv2.resizeWindow("Gesture Recognition", window_w, window_h)
-      cv2.moveWindow("Gesture Recognition", screen_width // 2, 0)
 
       timestamp = 0
 
       while cap.isOpened():
             success, frame = cap.read()
             frame = cv2.flip(frame, 1) # flip to have correct right/left sides
-  
+
             if not success:
                   break
 
@@ -258,7 +274,7 @@ def main(hand_type):
             action_recognizer.recognize_async(action_image, timestamp)
 
             # Resize to correct aspect ratio 
-            win_x, win_y, win_w, win_h = cv2.getWindowImageRect("Gesture Recognition")
+            win_x, win_y, win_w, win_h = cv2.getWindowImageRect(WINDOW_NAME)
             frame_display = resize_with_aspect_ratio(frame, win_w, win_h)
 
             add_motion_dot(frame_display,win_w,win_h)
@@ -269,7 +285,7 @@ def main(hand_type):
 
 
             # Display image in cv2 window 
-            cv2.imshow("Gesture Recognition", frame_display)
+            cv2.imshow(WINDOW_NAME, frame_display)
 
             # Break gracefully
             if cv2.waitKey(10) & 0xFF == ord(QUIT_KEY):
@@ -278,6 +294,37 @@ def main(hand_type):
       cap.release()
       motion_recognizer.close()
       action_recognizer.close()
+
+# endregion
+
+# region main
+def main(hand_type):
+      start_up = True
+      while start_up:
+            # Window setup
+            cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+            screen_width, screen_height = pyautogui.size()
+            window_w = screen_width // 2
+            window_h = int(screen_height * 0.9)
+            cv2.resizeWindow(WINDOW_NAME, window_w, window_h)
+            cv2.moveWindow(WINDOW_NAME, screen_width // 2, 0)
+
+            # Get start image
+            img = np.zeros((window_w, window_h, 3), np.uint8) 
+
+            # Resize to correct aspect ratio 
+            # win_x, win_y, win_w, win_h = cv2.getWindowImageRect(WINDOW_NAME)
+            # frame_display = resize_with_aspect_ratio(img, win_w, win_h)
+            center_position = (int(window_w/2), int(window_h/2))
+            cv2.putText(img, "Welcome", center_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),2,cv2.LINE_AA)
+            cv2.imshow(WINDOW_NAME, img)
+
+            # Move to live stream
+            if cv2.waitKey(10) & 0xFF == ord(START_KEY):
+                  start_up = False
+
+            
+      start_live_stream(hand_type)
       cv2.destroyAllWindows()
 
 
