@@ -1,4 +1,4 @@
-from connect_w_stardew import press_action, release_action
+from connect_w_stardew import press_action, release_action, move_mouse
 from collections import Counter
 
 CURRENT_STATE = "init"
@@ -12,6 +12,7 @@ START_INDEX = 5
 TOOL_INDEX = 1
 FIRST_HOLD = 1
 DEBOUNCE_CLICK = []
+RELEASE_NEXT = False
 
 
 def call_action_state(action, motion_x, motion_y):
@@ -27,7 +28,7 @@ def call_action_state(action, motion_x, motion_y):
     if count > 1:
         click_action = most_common_action
 
-    print(DEBOUNCE_CLICK)
+    # print(DEBOUNCE_CLICK)
 
     TOOL_QUEUE.append(action)
     if len(TOOL_QUEUE) > 3:
@@ -38,20 +39,16 @@ def call_action_state(action, motion_x, motion_y):
         MAP_QUEUE.pop(0)
 
 
-
     if CURRENT_STATE == "init":
         init()
     elif CURRENT_STATE == "click":
         click_once(click_action)
     elif CURRENT_STATE == "holdMap":
-        # MAP_QUEUE.append(action)
-        # if len(MAP_QUEUE) > 3:
-        #     MAP_QUEUE.pop(0)
         holdMap(action)
     elif CURRENT_STATE == "holdTool":
         holdTool(action)
     elif CURRENT_STATE == "mouse":
-        mouse_control(action)
+        mouse_control(action, motion_x, motion_y)
     elif CURRENT_STATE == "release":
         release(action)
     else:
@@ -62,23 +59,27 @@ def init():
     if START_INDEX <= 0:
         CURRENT_STATE = "no"
     START_INDEX -= 1
-    # no_movement("none","none")
 
 def no_action(action):
     global CURRENT_STATE, INDEX, CURRENT_ACTION, HOLD_ACTION,MAP_QUEUE,TOOL_QUEUE
+    
+    print("NO ACTION STATE ---------------------------------")
     if action != "none":
         CURRENT_ACTION = action
-        HOLD_ACTION = action
     
         INDEX = 2
         if action == "map":
+            HOLD_ACTION = action
             press_action(HOLD_ACTION)
             release_action(HOLD_ACTION)
             CURRENT_STATE = "holdMap"
         if action == "holdTool":
+            HOLD_ACTION = action
             press_action(HOLD_ACTION)
             CURRENT_STATE = "holdTool"
         elif action in ["menu", "journal"]:
+            HOLD_ACTION = action
+            press_action(CURRENT_ACTION)
             CURRENT_STATE = "mouse"
         else:
             if CURRENT_ACTION != CLICK_ACTION:
@@ -86,14 +87,17 @@ def no_action(action):
 
 def click_once(action):
     global CURRENT_STATE, CLICK_ACTION
+
+    print("CLICK ONCE STATE ---------------------------------")
     press_action(CURRENT_ACTION)
     CURRENT_STATE = "release"
     CLICK_ACTION = CURRENT_ACTION
 
 def holdMap(action):
     global CURRENT_STATE, MAP_QUEUE, FIRST_HOLD
- 
-    print("Hold Action: ", HOLD_ACTION)
+    
+    print("HOLD MAP STATE ---------------------------------")
+    # print("Hold Action: ", HOLD_ACTION)
     # if FIRST_HOLD == 1:
     #     FIRST_HOLD -= 1
     #     release_action(HOLD_ACTION)
@@ -110,7 +114,8 @@ def holdMap(action):
 def holdTool(action):
     global CURRENT_STATE, TOOL_INDEX,TOOL_QUEUE
 
-    print("Hold Action: ", HOLD_ACTION)
+    print("HOLDTOOL STATE ---------------------------------")
+    # print("Hold Action: ", HOLD_ACTION)
     if TOOL_INDEX % 2 == 0:
         release_action(HOLD_ACTION)
     else:
@@ -119,17 +124,57 @@ def holdTool(action):
     TOOL_INDEX+=1 
 
     if HOLD_ACTION not in TOOL_QUEUE:
-        print("left hold")
+        # print("left hold")
         CURRENT_STATE = "release"
 
-def mouse_control(action):
-    global CURRENT_STATE
-    press_action(CURRENT_ACTION)
-    CURRENT_STATE = "release"
+def mouse_control(action, motion_x, motion_y):
+    global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION 
+
+    print("MOUSE STATE ---------------------------------")
+    move = False
+    x_offset = 0
+    y_offset = 0
+    if motion_x == "left":
+        x_offset = -15
+        move = True
+    elif motion_x == "right":
+        x_offset = 15
+        move = True
+    if motion_y == "down":
+        y_offset = 15
+        move = True
+    elif motion_y == "up":
+        y_offset = -15
+        move = True
+
+    if move == True:
+        move_mouse(x_offset, y_offset,.05)
+
+    if RELEASE_NEXT == True:
+        release_action(CLICK_ACTION)
+        CLICK_ACTION = "none"
+        RELEASE_NEXT = False
+    elif action == "tool":
+        CLICK_ACTION = "tool"
+        press_action(CLICK_ACTION)
+        RELEASE_NEXT = True
+
+    if action == "two":
+        print("here")
+        print(HOLD_ACTION)
+        press_action(HOLD_ACTION)
+        CURRENT_STATE = "release"
 
 def release(action):
     global CURRENT_STATE, CURRENT_ACTION, INDEX, FIRST_HOLD
-    release_action(CURRENT_ACTION)
-    release_action(HOLD_ACTION)
+
+    print("RELEASE STATE ---------------------------------")
+    print("releasing current action: ", CURRENT_ACTION)
+    if CURRENT_ACTION == HOLD_ACTION:
+        release_action(CURRENT_ACTION)
+    else:
+        print("releasing hold action: ",HOLD_ACTION)
+        release_action(HOLD_ACTION)
+        release_action(CURRENT_ACTION)
     CURRENT_STATE = "no"
     FIRST_HOLD = 1

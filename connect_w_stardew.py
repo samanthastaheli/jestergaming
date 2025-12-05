@@ -168,3 +168,7 @@ def release_movement(move_x, move_y):
         ReleaseKey(move_key1)
     if(move_key2!=0x00):
         ReleaseKey(move_key2)
+
+
+def move_mouse(x_offset, y_offset, sec):
+    pyautogui.move(x_offset, y_offset)#, duration=sec, tween=pyautogui.easeOutQuad)
