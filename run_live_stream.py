@@ -277,7 +277,7 @@ def start_live_stream(hand_type):
       # connect to the stardew game instance
       connect_to_window()
 
-      #initialize pygame
+      # initialize pygame
       pygame.init()
       clock = pygame.time.Clock()
 
