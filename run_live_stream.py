@@ -17,7 +17,11 @@ MOVE_MODEL_PATH = "exported_model/movement_gesture_recognizer.task"
 
 QUIT_KEY = 'q'
 START_KEY = 's'
+CONTROL_KEY = 'c'
 WINDOW_NAME = "Jester Gaming"
+
+WELCOME_IMG = cv2.imread("images/welcome.png")
+CONTROLS_IMG = cv2.imread("images/controls.png")
 
 # Update in callbacks
 MOTION = "none"
@@ -236,12 +240,19 @@ def motion_control():
            
 # region start up page
 
-def start_up_page():
+def display_controls_page(win_w, win_h):
       """
-      Creates start page for live stream window.
+      Display controls image on window.
       """
-      # Display start up page in window
-      # Button for continuing to web cam page 
+      control_page = True
+      while control_page:
+            controls_display = resize_with_aspect_ratio(CONTROLS_IMG, win_w, win_h)
+            cv2.imshow(WINDOW_NAME, controls_display)
+
+            if cv2.waitKey(10) & 0xFF == ord(QUIT_KEY):
+                  control_page = False
+
+
 
 # endregion
 
@@ -300,6 +311,7 @@ def start_live_stream(hand_type):
 # region main
 def main(hand_type):
       start_up = True
+      quit = False
       while start_up:
             # Window setup
             cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
@@ -308,23 +320,30 @@ def main(hand_type):
             window_h = int(screen_height * 0.9)
             cv2.resizeWindow(WINDOW_NAME, window_w, window_h)
             cv2.moveWindow(WINDOW_NAME, screen_width // 2, 0)
+            win_x, win_y, win_w, win_h = cv2.getWindowImageRect(WINDOW_NAME)
 
             # Get start image
-            img = np.zeros((window_w, window_h, 3), np.uint8) 
+            # img = np.zeros((window_w, window_h, 3), np.uint8) 
 
             # Resize to correct aspect ratio 
-            # win_x, win_y, win_w, win_h = cv2.getWindowImageRect(WINDOW_NAME)
-            # frame_display = resize_with_aspect_ratio(img, win_w, win_h)
-            center_position = (int(window_w/2), int(window_h/2))
-            cv2.putText(img, "Welcome", center_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),2,cv2.LINE_AA)
-            cv2.imshow(WINDOW_NAME, img)
+            welcome_display = resize_with_aspect_ratio(WELCOME_IMG, win_w, win_h)
+            # center_position = (int(window_w/2), int(window_h/2))
+            # cv2.putText(welcome_display, "Welcome", center_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255),2,cv2.LINE_AA)
+            cv2.imshow(WINDOW_NAME, welcome_display)
 
             # Move to live stream
-            if cv2.waitKey(10) & 0xFF == ord(START_KEY):
+            key = cv2.waitKey(0) & 0xFF
+            if key == ord(START_KEY):
                   start_up = False
+            # Exit all windows
+            if key == ord(QUIT_KEY):
+                  quit = True
+                  start_up = False
+            if key == ord(CONTROL_KEY):
+                  display_controls_page(win_w, win_h)
 
-            
-      start_live_stream(hand_type)
+      if not quit:
+            start_live_stream(hand_type)
       cv2.destroyAllWindows()
 
 
