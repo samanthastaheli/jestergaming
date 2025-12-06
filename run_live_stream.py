@@ -1,6 +1,7 @@
 import cv2
 import time
 import pyautogui
+import pygame
 import argparse
 import numpy as np
 import mediapipe as mp
@@ -148,7 +149,7 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
 
     #Motion
     motion_text_position = (50,50)
-    motion_score_position = (50,win_h-50)
+    motion_score_position = (50,win_h-75)
     motion_color = (106,190,48)
     #Print Lines 
     cv2.line(frame_display, (0,x_axis_y), (w//2,x_axis_y), motion_color, 4) #x-axis line
@@ -163,7 +164,7 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
 
     #Action
     action_text_position = (y_axis_x+50, 50)
-    action_score_position = (y_axis_x+50,win_h-50)
+    action_score_position = (y_axis_x+50,win_h-75)
     action_color = (255, 255, 102)
     #Print Action type
     cv2.putText(frame_display, f"Action: {ACTION}", action_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
@@ -178,6 +179,16 @@ def add_motion_dot(frame_display,win_w,win_h):
       cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
       # cv2.putText(frame_display, f"Location: {pixel_x} {pixel_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
 
+def add_FPS(frame_display, win_w, win_h,clock):
+      fps_position = (0+50,win_h-25)
+      fps_color = (255, 255, 102)
+      #fps
+      clock.tick()
+      fps = int(clock.get_fps())
+
+      cv2.putText(frame_display, f"FPS: {fps}", fps_position, cv2.FONT_HERSHEY_SIMPLEX, 1, fps_color,2,cv2.LINE_AA)
+
+     
 
 def play_game():
       global PREVIOUS_ACTION
@@ -185,17 +196,18 @@ def play_game():
       ##previous function call
       # control_game(MOTION, ACTION)
 
+      #grab x-axis and y-axis movement inputs
+      motion_x, motion_y = motion_control()
+
       #attempt at actionss
       if A_SCORE > 0.75:
-            call_action_state(ACTION,"none","none")
+            call_action_state(ACTION,motion_x,motion_y)
       # if PREVIOUS_ACTION != ACTION:
       #      release_action(PREVIOUS_ACTION)
       #      time.sleep(.3)
       #      press_action(ACTION)
       # PREVIOUS_ACTION = ACTION
 
-      #grab x-axis and y-axis movement inputs
-      motion_x, motion_y = motion_control()
 
       #state machine for motion
       #if certain action, disable motion
@@ -265,6 +277,10 @@ def start_live_stream(hand_type):
       # connect to the stardew game instance
       connect_to_window()
 
+      #initialize pygame
+      pygame.init()
+      clock = pygame.time.Clock()
+
       motion_recognizer, action_recognizer = get_models()
 
       cap = cv2.VideoCapture(0)
@@ -274,6 +290,7 @@ def start_live_stream(hand_type):
       while cap.isOpened():
             success, frame = cap.read()
             frame = cv2.flip(frame, 1) # flip to have correct right/left sides
+
 
             if not success:
                   break
@@ -290,10 +307,10 @@ def start_live_stream(hand_type):
 
             add_motion_dot(frame_display,win_w,win_h)
             add_frame_details(frame_display, win_x, win_y, win_w, win_h)
-
             motion_x, motion_y = play_game()
             cv2.putText(frame_display, f"Motion: {motion_x} {motion_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
 
+            add_FPS(frame_display,win_w,win_h,clock)
 
             # Display image in cv2 window 
             cv2.imshow(WINDOW_NAME, frame_display)
