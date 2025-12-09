@@ -13,8 +13,8 @@ from motion_sm import call_motion_state
 from action_sm import call_action_state
 
 # Path to .task model
-ACTION_MODEL_PATH = "exported_model/action_gesture_recognizer.task"
-MOVE_MODEL_PATH = "exported_model/movement_gesture_recognizer.task"
+ACTION_MODEL_PATH = "exported_model_action/gesture_recognizer.task"
+MOVE_MODEL_PATH = "exported_model_movement/gesture_recognizer.task"
 
 QUIT_KEY = 'q'
 START_KEY = 's'
@@ -140,8 +140,9 @@ def get_models():
 
 # endregion
 
+# region Screen Prints
 
-def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
+def add_frame_details(frame_display, win_x, win_y, win_w, win_h, motion_x, motion_y):
     h, w = frame_display.shape[:2]
 
     x_axis_y = h // 2
@@ -154,10 +155,28 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
     #Print Lines 
     cv2.line(frame_display, (0,x_axis_y), (w//2,x_axis_y), motion_color, 4) #x-axis line
     cv2.line(frame_display, (y_axis_x//2, win_y*4), (y_axis_x//2, h-(win_y*4)), motion_color, 4) #y-axis line
+    #Print deadzone radius
+    radius = 100
+    circle_y = ((win_y*4) + (h-(win_y*4)))//2
+    circle_x = w//4
+    cv2.circle(frame_display, (circle_x, circle_y), radius, motion_color, 4)
     #Print Motion Type
 #     cv2.putText(frame_display, f"Motion: {MOTION}", motion_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
-    #Print Motion Score 
-    cv2.putText(frame_display, f"Percent Accuracy: {M_SCORE * 100:.0f}%", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
+    if MOTION not in ["none", "", "run"]:
+      motion_to_print = ""
+      if motion_x not in ["none", ""]:
+           motion_to_print = motion_to_print + motion_x + " "
+      if motion_y not in ["none", ""]:
+           motion_to_print = motion_to_print + motion_y
+      #Print Motion Type 
+      cv2.putText(frame_display, f"Motion: {motion_to_print}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, motion_color,2,cv2.LINE_AA)
+      #Print Motion Score
+      cv2.putText(frame_display, f"Percent Accuracy: {M_SCORE * 100:.0f}%", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
+    else:
+      #Print Motion Type
+      cv2.putText(frame_display, f"Motion: ", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, motion_color,2,cv2.LINE_AA)
+      #Print Motion Score
+      cv2.putText(frame_display, f"Percent Accuracy: ", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
 
     #line to split screen
     cv2.line(frame_display, (y_axis_x,0), (y_axis_x,win_h), (255,102,178), 3) #y-axis line
@@ -166,18 +185,23 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h):
     action_text_position = (y_axis_x+50, 50)
     action_score_position = (y_axis_x+50,win_h-75)
     action_color = (255, 255, 102)
-    #Print Action type
-    cv2.putText(frame_display, f"Action: {ACTION}", action_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
-    #Print Action Score
-    cv2.putText(frame_display, f"Percent Accuracy: {A_SCORE * 100:.0f}%", action_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
+    if ACTION not in ["none", ""]:
+      #Print Action type
+      cv2.putText(frame_display, f"Action: {ACTION}", action_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
+      #Print Action Score
+      cv2.putText(frame_display, f"Percent Accuracy: {A_SCORE * 100:.0f}%", action_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
+    else:
+      #Print Action type
+      cv2.putText(frame_display, f"Action: ", action_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
+      #Print Action Score
+      cv2.putText(frame_display, f"Percent Accuracy: ", action_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1, action_color,2,cv2.LINE_AA)
 
 def add_motion_dot(frame_display,win_w,win_h):
       pixel_x = int(M_X * win_w)//2
       pixel_y = int(M_Y * win_h)
 
-      # print("Gesture pixel location:", pixel_x, pixel_y)
-      cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
-      # cv2.putText(frame_display, f"Location: {pixel_x} {pixel_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
+      if MOTION == "move":
+            cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
 
 def add_FPS(frame_display, win_w, win_h,clock):
       fps_position = (0+50,win_h-25)
@@ -188,7 +212,7 @@ def add_FPS(frame_display, win_w, win_h,clock):
 
       cv2.putText(frame_display, f"FPS: {fps}", fps_position, cv2.FONT_HERSHEY_SIMPLEX, 1, fps_color,2,cv2.LINE_AA)
 
-     
+# endregion   
 
 def play_game():
       global PREVIOUS_ACTION
@@ -200,7 +224,7 @@ def play_game():
       motion_x, motion_y = motion_control()
 
       #attempt at actionss
-      if A_SCORE > 0.75:
+      if A_SCORE > 0.8:
             call_action_state(ACTION,motion_x,motion_y)
       # if PREVIOUS_ACTION != ACTION:
       #      release_action(PREVIOUS_ACTION)
@@ -228,7 +252,7 @@ def motion_control():
       #normalize pixel coordinates
       palm_x = M_X
       palm_y = M_Y
-      center_radius = .20
+      center_radius = .150
 
       dx = palm_x - 0.5
       dy = palm_y - 0.5
@@ -306,10 +330,8 @@ def start_live_stream(hand_type):
             frame_display = resize_with_aspect_ratio(frame, win_w, win_h)
 
             add_motion_dot(frame_display,win_w,win_h)
-            add_frame_details(frame_display, win_x, win_y, win_w, win_h)
             motion_x, motion_y = play_game()
-            cv2.putText(frame_display, f"Motion: {motion_x} {motion_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
-
+            add_frame_details(frame_display, win_x, win_y, win_w, win_h, motion_x, motion_y)
             add_FPS(frame_display,win_w,win_h,clock)
 
             # Display image in cv2 window 
