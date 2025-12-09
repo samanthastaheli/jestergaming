@@ -33,11 +33,11 @@ def call_action_state(action, motion_x, motion_y):
 
     # print(DEBOUNCE_CLICK)
 
-    TOOL_QUEUE.append(action)
+    TOOL_QUEUE.append(click_action)
     if len(TOOL_QUEUE) > 3:
         TOOL_QUEUE.pop(0)
 
-    MAP_QUEUE.append(action)
+    MAP_QUEUE.append(click_action)
     if len(MAP_QUEUE) > 5:
         MAP_QUEUE.pop(0)
 
@@ -91,8 +91,10 @@ def no_action(action):
             # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
         elif action == "closeMenu":
-            #nothing should happen with close menu unless you're using the menu
             return
+        # elif action in ["closeMenu", "map", "menu","journal"]:
+        #     #nothing should happen with close menu unless you're using the menu
+        #     return
         else:
             if CURRENT_ACTION != CLICK_ACTION:
                 CURRENT_STATE = "click"
