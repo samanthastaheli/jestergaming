@@ -14,6 +14,8 @@ FIRST_HOLD = 1
 DEBOUNCE_CLICK = []
 RELEASE_NEXT = False
 RELEASE_MENU = False
+MOUSE_INDEX = 1
+MOUSE_MOVE_SPEED = 7
 
 
 def call_action_state(action, motion_x, motion_y):
@@ -78,12 +80,18 @@ def no_action(action):
             HOLD_ACTION = action
             press_action(HOLD_ACTION)
             CURRENT_STATE = "holdTool"
-        elif action in ["menu", "journal"]:
+        elif action == "menu":
             HOLD_ACTION = action
             press_action(CURRENT_ACTION)
             # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
-        elif action == "two":
+        elif action == "journal":
+            HOLD_ACTION = action
+            press_action(HOLD_ACTION)
+            release_action(HOLD_ACTION)
+            CURRENT_STATE = "mouse"
+        elif action == "closeMenu":
+            #nothing should happen with close menu unless you're using the menu
             return
         else:
             if CURRENT_ACTION != CLICK_ACTION:
@@ -132,7 +140,7 @@ def holdTool(action):
         CURRENT_STATE = "release"
 
 def mouse_control(action, motion_x, motion_y):
-    global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION, RELEASE_MENU 
+    global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION, RELEASE_MENU, MOUSE_INDEX 
     # press_action(HOLD_ACTION)
     print("MOUSE STATE ---------------------------------")
 
@@ -144,22 +152,25 @@ def mouse_control(action, motion_x, motion_y):
     move = False
     x_offset = 0
     y_offset = 0
-    if motion_x == "left":
-        x_offset = -15
-        move = True
-    elif motion_x == "right":
-        x_offset = 15
-        move = True
-    if motion_y == "down":
-        y_offset = 15
-        move = True
-    elif motion_y == "up":
-        y_offset = -15
-        move = True
+    if MOUSE_INDEX >0:#% 2 ==0:
+        if motion_x == "left":
+            x_offset = -MOUSE_MOVE_SPEED
+            move = True
+        elif motion_x == "right":
+            x_offset = MOUSE_MOVE_SPEED
+            move = True
+        if motion_y == "down":
+            y_offset = MOUSE_MOVE_SPEED
+            move = True
+        elif motion_y == "up":
+            y_offset = -MOUSE_MOVE_SPEED
+            move = True
 
-    if move == True:
-        move_mouse(x_offset, y_offset,.05)
+        if move == True:
+            move_mouse(x_offset, y_offset)
+    MOUSE_INDEX+=1
 
+    # control mouse click while in menu or journal
     if RELEASE_NEXT == True:
         release_action(CLICK_ACTION)
         CLICK_ACTION = "none"
@@ -169,7 +180,7 @@ def mouse_control(action, motion_x, motion_y):
         press_action(CLICK_ACTION)
         RELEASE_NEXT = True
 
-    if action == "two":
+    if action == "closeMenu":
         print("here")
         print(HOLD_ACTION)
         # press_action(HOLD_ACTION)
@@ -177,8 +188,58 @@ def mouse_control(action, motion_x, motion_y):
         # press_action(HOLD_ACTION)
         RELEASE_MENU = True
 
+def mouse_control_journal(action, motion_x, motion_y):
+    global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION, RELEASE_MENU, MOUSE_INDEX 
+    # press_action(HOLD_ACTION)
+    print("MOUSE STATE ---------------------------------")
+
+    if RELEASE_MENU == True:
+        press_action(HOLD_ACTION)
+        CURRENT_STATE = "release"
+        RELEASE_MENU = False
+        return
+    move = False
+    x_offset = 0
+    y_offset = 0
+    if MOUSE_INDEX >0:#% 2 ==0:
+        if motion_x == "left":
+            x_offset = -MOUSE_MOVE_SPEED
+            move = True
+        elif motion_x == "right":
+            x_offset = MOUSE_MOVE_SPEED
+            move = True
+        if motion_y == "down":
+            y_offset = MOUSE_MOVE_SPEED
+            move = True
+        elif motion_y == "up":
+            y_offset = -MOUSE_MOVE_SPEED
+            move = True
+
+        if move == True:
+            move_mouse(x_offset, y_offset)
+    MOUSE_INDEX+=1
+
+    # control mouse click while in menu or journal
+    if RELEASE_NEXT == True:
+        release_action(CLICK_ACTION)
+        CLICK_ACTION = "none"
+        RELEASE_NEXT = False
+    elif action == "tool":
+        CLICK_ACTION = "tool"
+        press_action(CLICK_ACTION)
+        RELEASE_NEXT = True
+
+    if action == "closeMenu":
+        print("here")
+        print(HOLD_ACTION)
+        # press_action(HOLD_ACTION)
+        release_action(HOLD_ACTION)
+        # press_action(HOLD_ACTION)
+        RELEASE_MENU = True
+
+
 def release(action):
-    global CURRENT_STATE, CURRENT_ACTION, INDEX, FIRST_HOLD
+    global CURRENT_STATE, CURRENT_ACTION, INDEX, FIRST_HOLD, RELEASE_MENU
 
     print("RELEASE STATE ---------------------------------")
     print("releasing current action: ", CURRENT_ACTION)
@@ -190,3 +251,4 @@ def release(action):
         release_action(CURRENT_ACTION)
     CURRENT_STATE = "no"
     FIRST_HOLD = 1
+    RELEASE_MENU = False

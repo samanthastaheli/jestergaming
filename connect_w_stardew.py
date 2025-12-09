@@ -3,6 +3,8 @@ import keyboard
 import pygetwindow as gw
 from game_input import PressKey, ReleaseKey
 import time
+from pynput.mouse import Controller
+mouse = Controller()
 
  ######## INPUT CODES #########
     # Left click = 0x01
@@ -27,12 +29,12 @@ import time
     # 9 = 0x39
 
 print("starting")
-time.sleep(3)
 
 actions = { "tool":0x01, #click once
             "holdTool":0x01, #hold command
             "action":0x02, #click once
             "menu":0x1B, #switch to mouse input
+            "closeMenu":0x01,
             "one":0x31, #click once
             "two":0x32, #click once
             "three":0x33, #click once
@@ -170,5 +172,10 @@ def release_movement(move_x, move_y):
         ReleaseKey(move_key2)
 
 
-def move_mouse(x_offset, y_offset, sec):
+def move_mouse_old(x_offset, y_offset, sec):
     pyautogui.move(x_offset, y_offset)#, duration=sec, tween=pyautogui.easeOutQuad)
+
+def move_mouse(dx, dy):
+    # x, y = win32api.GetCursorPos()
+    # win32api.SetCursorPos((x + dx, y + dy))
+    mouse.move(dx, dy)
