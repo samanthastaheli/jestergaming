@@ -142,12 +142,12 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h, motion_x, motio
       if motion_y not in ["none", ""]:
            motion_to_print = motion_to_print + motion_y
       #Print Motion Type 
-      cv2.putText(frame_display, f"Motion: {motion_to_print}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
+      cv2.putText(frame_display, f"Motion: {motion_to_print}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, motion_color,2,cv2.LINE_AA)
       #Print Motion Score
       cv2.putText(frame_display, f"Percent Accuracy: {M_SCORE * 100:.0f}%", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
     else:
       #Print Motion Type
-      cv2.putText(frame_display, f"Motion: ", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
+      cv2.putText(frame_display, f"Motion: ", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, motion_color,2,cv2.LINE_AA)
       #Print Motion Score
       cv2.putText(frame_display, f"Percent Accuracy: ", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
 
