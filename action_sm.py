@@ -88,7 +88,7 @@ def no_action(action):
         elif action == "journal":
             HOLD_ACTION = action
             press_action(HOLD_ACTION)
-            release_action(HOLD_ACTION)
+            # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
         elif action == "closeMenu":
             #nothing should happen with close menu unless you're using the menu
@@ -148,6 +148,7 @@ def mouse_control(action, motion_x, motion_y):
         press_action(HOLD_ACTION)
         CURRENT_STATE = "release"
         RELEASE_MENU = False
+        RELEASE_NEXT = False
         return
     move = False
     x_offset = 0
@@ -197,6 +198,7 @@ def mouse_control_journal(action, motion_x, motion_y):
         press_action(HOLD_ACTION)
         CURRENT_STATE = "release"
         RELEASE_MENU = False
+        RELEASE_NEXT = False
         return
     move = False
     x_offset = 0

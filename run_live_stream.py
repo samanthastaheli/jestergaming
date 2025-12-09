@@ -136,8 +136,13 @@ def add_frame_details(frame_display, win_x, win_y, win_w, win_h, motion_x, motio
     #Print Motion Type
 #     cv2.putText(frame_display, f"Motion: {MOTION}", motion_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
     if MOTION not in ["none", "", "run"]:
+      motion_to_print = ""
+      if motion_x not in ["none", ""]:
+           motion_to_print = motion_to_print + motion_x + " "
+      if motion_y not in ["none", ""]:
+           motion_to_print = motion_to_print + motion_y
       #Print Motion Type 
-      cv2.putText(frame_display, f"Motion: {motion_x} {motion_y}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
+      cv2.putText(frame_display, f"Motion: {motion_to_print}", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 102),2,cv2.LINE_AA)
       #Print Motion Score
       cv2.putText(frame_display, f"Percent Accuracy: {M_SCORE * 100:.0f}%", motion_score_position, cv2.FONT_HERSHEY_SIMPLEX, 1,motion_color,2,cv2.LINE_AA)
     else:
