@@ -28,7 +28,7 @@ mouse = Controller()
     # 8 = 0x38
     # 9 = 0x39
 
-print("starting")
+#print("starting")
 
 actions = { "tool":0x01, #click once
             "holdTool":0x01, #hold command
@@ -172,8 +172,8 @@ def release_movement(move_x, move_y):
         ReleaseKey(move_key2)
 
 
-def move_mouse_old(x_offset, y_offset, sec):
-    pyautogui.move(x_offset, y_offset)#, duration=sec, tween=pyautogui.easeOutQuad)
+# def move_mouse(x_offset, y_offset):
+#     pyautogui.move(x_offset, y_offset)#, duration=sec, tween=pyautogui.easeOutQuad)
 
 def move_mouse(dx, dy):
     # x, y = win32api.GetCursorPos()

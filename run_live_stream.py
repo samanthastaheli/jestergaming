@@ -38,6 +38,9 @@ PREVIOUS_ACTION = "none"
 A_SCORE = 0.0
 A_SCORE_DEFAULT = 0.0
 
+FRAME_INDEX = 1
+FPS_Q = []
+
 
 # region Async Callback Functions 
 
@@ -204,6 +207,7 @@ def add_motion_dot(frame_display,win_w,win_h):
             cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
 
 def add_FPS(frame_display, win_w, win_h,clock):
+      global FRAME_INDEX, FPS_Q
       fps_position = (0+50,win_h-25)
       fps_color = (255, 255, 102)
       #fps
@@ -211,6 +215,9 @@ def add_FPS(frame_display, win_w, win_h,clock):
       fps = int(clock.get_fps())
 
       cv2.putText(frame_display, f"FPS: {fps}", fps_position, cv2.FONT_HERSHEY_SIMPLEX, 1, fps_color,2,cv2.LINE_AA)
+
+      FPS_Q.append(fps)
+      FRAME_INDEX +=1
 
 # endregion   
 
@@ -226,11 +233,11 @@ def play_game():
       #attempt at actionss
       if A_SCORE > 0.8:
             call_action_state(ACTION,motion_x,motion_y)
-      # if PREVIOUS_ACTION != ACTION:
-      #      release_action(PREVIOUS_ACTION)
-      #      time.sleep(.3)
-      #      press_action(ACTION)
-      # PREVIOUS_ACTION = ACTION
+            # if PREVIOUS_ACTION != ACTION:
+            #      release_action(PREVIOUS_ACTION)
+            #      time.sleep(.05)
+            #      press_action(ACTION)
+            # PREVIOUS_ACTION = ACTION
 
 
       #state machine for motion
@@ -243,7 +250,7 @@ def play_game():
             call_motion_state("none","none")
 
       # press_movement(motion_x, motion_y)
-      # time.sleep(.2)
+      # time.sleep(.05)
       # release_movement(motion_x, motion_y)
       # PREVIOUS_MOTION = MOTION
       return motion_x,motion_y
@@ -339,6 +346,7 @@ def start_live_stream(hand_type):
 
             # Break gracefully
             if cv2.waitKey(10) & 0xFF == ord(QUIT_KEY):
+                  print(FPS_Q)
                   break
 
       cap.release()
