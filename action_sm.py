@@ -176,12 +176,15 @@ def mouse_control(action, motion_x, motion_y):
     # control mouse click while in menu or journal
     if RELEASE_NEXT == True:
         release_action(CLICK_ACTION)
-        CLICK_ACTION = "none"
         RELEASE_NEXT = False
-    elif action == "tool":
+    elif action == "tool" and action != CLICK_ACTION:
         CLICK_ACTION = "tool"
         press_action(CLICK_ACTION)
         RELEASE_NEXT = True
+
+    if action != "tool":
+        CLICK_ACTION = "none"
+
 
     if action == "closeMenu":
         print("here")
