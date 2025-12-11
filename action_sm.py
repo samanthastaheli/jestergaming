@@ -66,18 +66,18 @@ def init():
     START_INDEX -= 1
 
 def no_action(action):
-    global CURRENT_STATE, ACTION_TO_RELEASE,INDEX, CURRENT_ACTION, HOLD_ACTION,MAP_QUEUE,TOOL_QUEUE,START_INDEX, TOOL_INDEX, FIRST_HOLD, RELEASE_NEXT, RELEASE_MENU
+    global CURRENT_STATE, ACTION_TO_RELEASE,INDEX, CURRENT_ACTION, HOLD_ACTION,MAP_QUEUE,TOOL_QUEUE,START_INDEX, TOOL_INDEX, FIRST_HOLD, RELEASE_NEXT, RELEASE_MENU,PREVIOUS_CLICK
     
     if action not in ["none", ""]:
         CURRENT_ACTION = action
     
         INDEX = 2
-        if action == "map":
-            HOLD_ACTION = action
-            press_action(HOLD_ACTION)
-            # release_action(HOLD_ACTION)
-            print("pressed  map")
-            CURRENT_STATE = "holdMap"
+        # if action == "map":
+        #     HOLD_ACTION = action
+        #     press_action(HOLD_ACTION)
+        #     # release_action(HOLD_ACTION)
+        #     print("pressed  map")
+        #     CURRENT_STATE = "holdMap"
         if action == "holdTool":
             HOLD_ACTION = action
             press_action(HOLD_ACTION)
@@ -99,8 +99,8 @@ def no_action(action):
             #nothing should happen with close menu unless you're using the menu
             return
         else:
-            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "map", "menu"]:
-                CURRENT_STATE = "click"
+            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "menu"]:#"map", "menu"]:
+                    CURRENT_STATE = "click"
 
     else:
         INDEX = 2
@@ -110,6 +110,7 @@ def no_action(action):
         RELEASE_NEXT = False
         RELEASE_MENU = False
         ACTION_TO_RELEASE = "none"
+        PREVIOUS_CLICK = "none"
         release_action("map")
 
 def click_once(action):

@@ -6,6 +6,8 @@ import time
 from pynput.mouse import Controller
 mouse = Controller()
 
+MOUSE_SPEED = .7
+
  ######## INPUT CODES #########
     # Left click = 0x01
     # Right click = 0x02
@@ -47,16 +49,12 @@ actions = { "tool":0x01, #click once
             "":0x00
             }
 
-movements = {   "up": [0x57,0x00],
-                "down":[0x53,0x00],
-                "left":[0x41,0x00],
-                "right":[0x44,0x00],
-                "up_right":[0x57,0x44],
-                "down_right":[0x53,0x44],
-                "up_left":[0x57,0x41],
-                "down_left":[0x53,0x41],
-                "none":[0x00,0x00],
-                "":[0x00,0x00]
+movements = {   "up": 0x57,
+                "down":0x53,
+                "left":0x41,
+                "right":0x44,
+                "none":0x00,
+                "":0x00
                 }
 
 move_input = "none"
@@ -69,77 +67,6 @@ def connect_to_window():
         print("found window")
     except IndexError:
         print("couldn't find it")
-
-def control_game(move_input, action_input):
-    move_key = 0x00
-    move_key2 = 0x00
-    action_key=0x00
-    #Left half of screen = movement
-    match move_input:
-        case "up": #W
-            move_key=0x57
-        case "down": #S
-            move_key=0x53
-        case "left": #A
-            move_key=0x41
-        case "right": #D
-            move_key=0x44
-        case "up_right":
-            move_key=0x57
-            move_key2=0x44
-        case "up_left":
-            move_key=0x57
-            move_key2=0x41
-        case "down_right":
-            move_key=0x53
-            move_key2=0x44
-        case "down_left":
-            move_key=0x53
-            move_key2=0x41
-        case _:
-            move_key=0x00
-            move_key2=0x00
-                
-    #right half of the screen = actions
-    match action_input:
-        case "tool":
-            action_key=0x01
-        case "action":
-            action_key=0x02
-        case "menu":
-            action_key=0x1B
-        case "one":
-            action_key=0x31
-        case "two":
-            action_key=0x32
-        case "three":
-            action_key=0x33
-        case "four":
-            action_key=0x34
-        case "five":
-            action_key=0x35
-        case "journal":
-            action_key=0x46
-        case "map":
-            action_key=0x4D
-        case "toolbar":
-            action_key=0x09
-        case _:
-            action_key=0x00
-
-    if(move_key!=0x00):
-        PressKey(move_key)
-        if (move_key2!=0x00):
-            PressKey(move_key2)
-        time.sleep(.3)
-        ReleaseKey(move_key)
-        if (move_key2!=0x00):
-            ReleaseKey(move_key2)
-
-    if(action_key!=0x00):
-        PressKey(action_key)
-        time.sleep(.3)
-        ReleaseKey(action_key)
 
 def press_action(action_input):
     action_key=actions[action_input]
@@ -154,8 +81,8 @@ def release_action(action_input):
         ReleaseKey(action_key)
 
 def press_movement(move_x, move_y):
-    move_key1,_=movements[move_x]
-    move_key2,_=movements[move_y]
+    move_key1=movements[move_x]
+    move_key2=movements[move_y]
                 
     if(move_key1!=0x00):
         PressKey(move_key1)
@@ -163,19 +90,15 @@ def press_movement(move_x, move_y):
         PressKey(move_key2)
 
 def release_movement(move_x, move_y):
-    move_key1,_=movements[move_x]
-    move_key2,_=movements[move_y]
+    move_key1=movements[move_x]
+    move_key2=movements[move_y]
                 
     if(move_key1!=0x00):
         ReleaseKey(move_key1)
     if(move_key2!=0x00):
         ReleaseKey(move_key2)
 
-
-# def move_mouse(x_offset, y_offset):
-#     pyautogui.move(x_offset, y_offset)#, duration=sec, tween=pyautogui.easeOutQuad)
-
 def move_mouse(dx, dy):
     # x, y = win32api.GetCursorPos()
     # win32api.SetCursorPos((x + dx, y + dy))
-    mouse.move(dx, dy)
+    mouse.move(dx*MOUSE_SPEED, dy*MOUSE_SPEED)

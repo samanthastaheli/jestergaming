@@ -8,7 +8,7 @@ import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 from mediapipe.framework.formats import landmark_pb2
-from connect_w_stardew import connect_to_window, control_game, press_action, release_action, press_movement, release_movement
+from connect_w_stardew import connect_to_window
 from motion_sm import call_motion_state
 from action_sm import call_action_state
 
@@ -204,7 +204,7 @@ def add_motion_dot(frame_display,win_w,win_h):
       pixel_y = int(M_Y * win_h)
 
       if MOTION == "move":
-            cv2.circle(frame_display, (pixel_x,pixel_y), 8, (255,102,178), -1)
+            cv2.circle(frame_display, (pixel_x,pixel_y), 12, (255,102,178), -1)
 
 def add_FPS(frame_display, win_w, win_h,clock):
       global FRAME_INDEX, FPS_Q
@@ -230,20 +230,14 @@ def play_game():
       #grab x-axis and y-axis movement inputs
       motion_x, motion_y = motion_control()
 
-      #state machine for actions
+      #state machine for actions, only allows if score is above 70%
       if A_SCORE > 0.7:
             call_action_state(ACTION,motion_x,motion_y)
-            # if PREVIOUS_ACTION != ACTION:
-            #      release_action(PREVIOUS_ACTION)
-            #      time.sleep(.05)
-            #      press_action(ACTION)
-            # PREVIOUS_ACTION = ACTION
-
 
       #state machine for motion
-      #if certain action, disable motion
       if MOTION == "move":
             call_motion_state(motion_x,motion_y)
+      #if certain action, disable motion so that it can be used for mouse control
       elif ACTION in ["journal", "menu", "map"]:
             call_motion_state("none","none")
       else:
