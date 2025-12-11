@@ -68,7 +68,6 @@ def init():
 def no_action(action):
     global CURRENT_STATE, ACTION_TO_RELEASE,INDEX, CURRENT_ACTION, HOLD_ACTION,MAP_QUEUE,TOOL_QUEUE,START_INDEX, TOOL_INDEX, FIRST_HOLD, RELEASE_NEXT, RELEASE_MENU
     
-    # print("NO ACTION STATE ---------------------------------")
     if action not in ["none", ""]:
         CURRENT_ACTION = action
     
@@ -97,10 +96,8 @@ def no_action(action):
             # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
         elif action == "closeMenu":
+            #nothing should happen with close menu unless you're using the menu
             return
-        # elif action in ["closeMenu", "map", "menu","journal"]:
-        #     #nothing should happen with close menu unless you're using the menu
-        #     return
         else:
             if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "map", "menu"]:
                 CURRENT_STATE = "click"
@@ -128,21 +125,12 @@ def holdMap(action):
     global CURRENT_STATE, MAP_QUEUE, FIRST_HOLD,ACTION_TO_RELEASE
     
     print("HOLD MAP STATE ---------------------------------")
-    # #print("Hold Action: ", HOLD_ACTION)
-    # if FIRST_HOLD == 1:
-    #     FIRST_HOLD -= 1
-    #     release_action(HOLD_ACTION)
-    #     return
-    #print(MAP_QUEUE)
     if HOLD_ACTION not in MAP_QUEUE:
         #print("left hold----------------------------------------------------------------------")
         press_action(HOLD_ACTION)
         print("in holdMap, pressed: ", HOLD_ACTION)
         ACTION_TO_RELEASE = HOLD_ACTION
         CURRENT_STATE = "release"
-    # else:
-    #     release_action(HOLD_ACTION)
-    #     # #print("still hold")
 
 def holdTool(action):
     global CURRENT_STATE, TOOL_INDEX,TOOL_QUEUE,ACTION_TO_RELEASE
@@ -204,17 +192,14 @@ def mouse_control(action, motion_x, motion_y):
         print("in mouse control, pressed: ",CLICK_ACTION)
         RELEASE_NEXT = True
 
+    # only can use tool to select and click items here
     if action != "tool":
         CLICK_ACTION = "none"
 
-
+    # close the menu or journal
     if action == "closeMenu":
-        #print("here")
-        #print(HOLD_ACTION)
-        # press_action(HOLD_ACTION)
         release_action(HOLD_ACTION)
         print("in mouse, released: ",HOLD_ACTION)
-        # press_action(HOLD_ACTION)
         RELEASE_MENU = True
 
 
@@ -222,19 +207,6 @@ def release(action):
     global CURRENT_STATE, CURRENT_ACTION, INDEX, FIRST_HOLD, RELEASE_MENU
 
     print("RELEASE STATE ---------------------------------")
-    # if CLICK_ACTION != "none":
-    #     print("releasing click action: ", CLICK_ACTION)
-    #     release_action(CLICK_ACTION)
-    # elif CURRENT_ACTION == HOLD_ACTION:
-    #     print("releasing current action: ", CURRENT_ACTION)
-    #     release_action(CURRENT_ACTION)
-    # else:
-    #     print("releasing current action: ", CURRENT_ACTION)
-    #     print("releasing hold action: ",HOLD_ACTION)
-    #     release_action(HOLD_ACTION)
-    #     release_action(CURRENT_ACTION)
-
-
     print("in release, releasing action: ", ACTION_TO_RELEASE)
     release_action(ACTION_TO_RELEASE)
     CURRENT_STATE = "no"
