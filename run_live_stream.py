@@ -231,7 +231,7 @@ def play_game():
       motion_x, motion_y = motion_control()
 
       #attempt at actionss
-      if A_SCORE > 0.8:
+      if A_SCORE > 0.7:
             call_action_state(ACTION,motion_x,motion_y)
             # if PREVIOUS_ACTION != ACTION:
             #      release_action(PREVIOUS_ACTION)

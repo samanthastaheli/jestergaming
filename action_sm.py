@@ -76,8 +76,8 @@ def no_action(action):
         if action == "map":
             HOLD_ACTION = action
             press_action(HOLD_ACTION)
-            release_action(HOLD_ACTION)
-            print("pressed and released map")
+            # release_action(HOLD_ACTION)
+            print("pressed  map")
             CURRENT_STATE = "holdMap"
         if action == "holdTool":
             HOLD_ACTION = action
@@ -102,7 +102,7 @@ def no_action(action):
         #     #nothing should happen with close menu unless you're using the menu
         #     return
         else:
-            if CURRENT_ACTION != PREVIOUS_CLICK:
+            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "map", "menu"]:
                 CURRENT_STATE = "click"
 
     else:
