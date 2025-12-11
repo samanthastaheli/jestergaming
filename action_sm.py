@@ -151,7 +151,6 @@ def holdTool(action):
 
 def mouse_control(action, motion_x, motion_y):
     global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION, RELEASE_MENU, ACTION_TO_RELEASE
-    # press_action(HOLD_ACTION)
     print("MOUSE STATE ---------------------------------")
 
     if RELEASE_MENU == True:

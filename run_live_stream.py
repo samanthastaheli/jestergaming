@@ -230,7 +230,7 @@ def play_game():
       #grab x-axis and y-axis movement inputs
       motion_x, motion_y = motion_control()
 
-      #attempt at actionss
+      #state machine for actions
       if A_SCORE > 0.7:
             call_action_state(ACTION,motion_x,motion_y)
             # if PREVIOUS_ACTION != ACTION:
@@ -249,10 +249,6 @@ def play_game():
       else:
             call_motion_state("none","none")
 
-      # press_movement(motion_x, motion_y)
-      # time.sleep(.05)
-      # release_movement(motion_x, motion_y)
-      # PREVIOUS_MOTION = MOTION
       return motion_x,motion_y
 
 def motion_control():
