@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 
 
-action_labels = ['action', 'five', 'four', 'journal', 'map', 'menu', 'three', 'tool', 'toolbar', 'one', 'two']
+action_labels = ['action', 'five', 'four', 'journal', 'map', 'menu', 'three', 'tool', 'toolbar', 'one', 'two', 'none']
 action_image_counts = [3000,1770,1805,3000,3000,1742,1751,3000,3000,1778,1769]
 
 # Plot
