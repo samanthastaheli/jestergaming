@@ -40,13 +40,15 @@ A_SCORE_DEFAULT = 0.0
 
 FRAME_INDEX = 1
 FPS_Q = []
+ACTION_Q = []
+MOTION_Q = []
 
 
 # region Async Callback Functions 
 
 def motion_callback(result, output_image, timestamp_ms):
     """This will be called every time results are ready."""
-    global MOTION, M_SCORE, M_X, M_Y 
+    global MOTION, M_SCORE, M_X, M_Y
     if result.gestures:
       gesture = result.gestures[0][0]   # Top gesture
       MOTION = gesture.category_name
@@ -222,13 +224,14 @@ def add_FPS(frame_display, win_w, win_h,clock):
 # endregion   
 
 def play_game():
-      global PREVIOUS_ACTION
+      global MOTION_Q, ACTION_Q
 
       ##previous function call
       # control_game(MOTION, ACTION)
 
       #grab x-axis and y-axis movement inputs
       motion_x, motion_y = motion_control()
+      ACTION_Q.append(A_SCORE)
 
       #state machine for actions, only allows if score is above 70%
       if A_SCORE > 0.7 or ACTION in ["none",""]:
@@ -333,7 +336,7 @@ def start_live_stream(hand_type):
 
             # Break gracefully
             if cv2.waitKey(10) & 0xFF == ord(QUIT_KEY):
-                  print(FPS_Q)
+                  print(ACTION_Q)
                   break
 
       cap.release()
