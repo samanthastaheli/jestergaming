@@ -99,7 +99,7 @@ def no_action(action):
             #nothing should happen with close menu unless you're using the menu
             return
         else:
-            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "menu"]:#"map", "menu"]:
+            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "menu", "map"]:#"map", "menu"]:
                     CURRENT_STATE = "click"
 
     else:
@@ -122,16 +122,16 @@ def click_once(action):
     CURRENT_STATE = "release"
     PREVIOUS_CLICK = CURRENT_ACTION
 
-def holdMap(action):
-    global CURRENT_STATE, MAP_QUEUE, FIRST_HOLD,ACTION_TO_RELEASE
+# def holdMap(action):
+#     global CURRENT_STATE, MAP_QUEUE, FIRST_HOLD,ACTION_TO_RELEASE
     
-    print("HOLD MAP STATE ---------------------------------")
-    if HOLD_ACTION not in MAP_QUEUE:
-        #print("left hold----------------------------------------------------------------------")
-        press_action(HOLD_ACTION)
-        print("in holdMap, pressed: ", HOLD_ACTION)
-        ACTION_TO_RELEASE = HOLD_ACTION
-        CURRENT_STATE = "release"
+#     print("HOLD MAP STATE ---------------------------------")
+#     if HOLD_ACTION not in MAP_QUEUE:
+#         #print("left hold----------------------------------------------------------------------")
+#         press_action(HOLD_ACTION)
+#         print("in holdMap, pressed: ", HOLD_ACTION)
+#         ACTION_TO_RELEASE = HOLD_ACTION
+#         CURRENT_STATE = "release"
 
 def holdTool(action):
     global CURRENT_STATE, TOOL_INDEX,TOOL_QUEUE,ACTION_TO_RELEASE
@@ -162,24 +162,24 @@ def mouse_control(action, motion_x, motion_y):
         RELEASE_MENU = False
         RELEASE_NEXT = False
         return
-    move = False
-    x_offset = 0
-    y_offset = 0
-    if motion_x == "left":
-        x_offset = -MOUSE_MOVE_SPEED
-        move = True
-    elif motion_x == "right":
-        x_offset = MOUSE_MOVE_SPEED
-        move = True
-    if motion_y == "down":
-        y_offset = MOUSE_MOVE_SPEED
-        move = True
-    elif motion_y == "up":
-        y_offset = -MOUSE_MOVE_SPEED
-        move = True
+    # move = False
+    # x_offset = 0
+    # y_offset = 0
+    # if motion_x == "left":
+    #     x_offset = -MOUSE_MOVE_SPEED
+    #     move = True
+    # elif motion_x == "right":
+    #     x_offset = MOUSE_MOVE_SPEED
+    #     move = True
+    # if motion_y == "down":
+    #     y_offset = MOUSE_MOVE_SPEED
+    #     move = True
+    # elif motion_y == "up":
+    #     y_offset = -MOUSE_MOVE_SPEED
+    #     move = True
 
-    if move == True:
-        move_mouse(x_offset, y_offset)
+    # if move == True:
+    #     move_mouse(x_offset, y_offset)
 
     # control mouse click while in menu or journal
     if RELEASE_NEXT == True:

@@ -235,13 +235,13 @@ def play_game():
             call_action_state(ACTION,motion_x,motion_y)
 
       #state machine for motion
-      if MOTION == "move":
-            call_motion_state(motion_x,motion_y)
+      if MOTION in ["move", "one"]:
+            call_motion_state(MOTION, motion_x,motion_y)
       #if certain action, disable motion so that it can be used for mouse control
-      elif ACTION in ["journal", "menu", "map"]:
-            call_motion_state("none","none")
+      # elif ACTION in ["journal", "menu", "map"]:
+      #       call_motion_state("none","none")
       else:
-            call_motion_state("none","none")
+            call_motion_state(MOTION, "none","none")
 
       return motion_x,motion_y
 
