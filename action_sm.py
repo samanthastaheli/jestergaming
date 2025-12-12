@@ -48,8 +48,6 @@ def call_action_state(action, motion_x, motion_y):
     elif CURRENT_STATE == "click":
         print("went to click with ", click_action)
         click_once(click_action)
-    elif CURRENT_STATE == "holdMap":
-        holdMap(action)
     elif CURRENT_STATE == "holdTool":
         holdTool(action)
     elif CURRENT_STATE == "mouse":
@@ -99,7 +97,7 @@ def no_action(action):
             #nothing should happen with close menu unless you're using the menu
             return
         else:
-            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "menu", "map"]:#"map", "menu"]:
+            if CURRENT_ACTION != PREVIOUS_CLICK and action not in ["journal", "menu", "map"]:
                     CURRENT_STATE = "click"
 
     else:
@@ -144,7 +142,7 @@ def holdTool(action):
         press_action(HOLD_ACTION)
 
     TOOL_INDEX+=1 
-
+    print(TOOL_QUEUE)
     if HOLD_ACTION not in TOOL_QUEUE:
         # #print("left hold")
         ACTION_TO_RELEASE = HOLD_ACTION
