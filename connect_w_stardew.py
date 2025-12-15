@@ -13,6 +13,7 @@ MOUSE_SPEED = .7
     # Right click = 0x02
     # Escape = 0x1B
     # Tab = 0x09
+    # Shift = 0x10
     # W = 0x57
     # A = 0x41
     # S = 0x53
@@ -31,6 +32,7 @@ MOUSE_SPEED = .7
     # 9 = 0x39
 
 #print("starting")
+SHIFT_KEY = 0x10
 
 actions = { "tool":0x01, #click once
             "holdTool":0x01, #hold command
@@ -80,7 +82,7 @@ def release_action(action_input):
     if(action_key!=0x00):
         ReleaseKey(action_key)
 
-def press_movement(move_x, move_y):
+def press_movement(move_x, move_y, bIsShift):
     move_key1=movements[move_x]
     move_key2=movements[move_y]
                 
@@ -88,8 +90,10 @@ def press_movement(move_x, move_y):
         PressKey(move_key1)
     if(move_key2!=0x00):
         PressKey(move_key2)
+    if bIsShift:
+        PressKey(SHIFT_KEY)
 
-def release_movement(move_x, move_y):
+def release_movement(move_x, move_y, bIsShift):
     move_key1=movements[move_x]
     move_key2=movements[move_y]
                 
@@ -97,6 +101,8 @@ def release_movement(move_x, move_y):
         ReleaseKey(move_key1)
     if(move_key2!=0x00):
         ReleaseKey(move_key2)
+    if bIsShift:
+        ReleaseKey(SHIFT_KEY)
 
 def move_mouse(dx, dy):
     # x, y = win32api.GetCursorPos()

@@ -231,7 +231,7 @@ def play_game():
 
       #grab x-axis and y-axis movement inputs
       motion_x, motion_y = motion_control()
-      ACTION_Q.append(A_SCORE)
+      # MOTION_Q.append((M_SCORE,MOTION))
 
       #state machine for actions, only allows if score is above 70%
       if A_SCORE > 0.7 or ACTION in ["none",""]:
@@ -241,7 +241,7 @@ def play_game():
       if MOTION in ["move", "one"]:
             call_motion_state(MOTION, motion_x,motion_y)
       else:
-            call_motion_state(MOTION, "none","none")
+            call_motion_state("none","none","none")
 
       return motion_x,motion_y
 
@@ -336,7 +336,7 @@ def start_live_stream(hand_type):
 
             # Break gracefully
             if cv2.waitKey(10) & 0xFF == ord(QUIT_KEY):
-                  print(ACTION_Q)
+                  # print(MOTION_Q)
                   break
 
       cap.release()

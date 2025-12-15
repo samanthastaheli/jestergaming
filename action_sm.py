@@ -46,7 +46,7 @@ def call_action_state(action, motion_x, motion_y):
     if CURRENT_STATE == "init":
         init()
     elif CURRENT_STATE == "click":
-        print("went to click with ", click_action)
+        ##print("went to click with ", click_action)
         click_once(click_action)
     elif CURRENT_STATE == "holdTool":
         holdTool(action)
@@ -79,18 +79,18 @@ def no_action(action):
         if action == "holdTool":
             HOLD_ACTION = action
             press_action(HOLD_ACTION)
-            print("pressed holdTool: ",HOLD_ACTION)
+            ##print("pressed holdTool: ",HOLD_ACTION)
             CURRENT_STATE = "holdTool"
         elif action == "menu":
             HOLD_ACTION = action
             press_action(CURRENT_ACTION)
-            print("pressed menu")
+            ##print("pressed menu")
             # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
         elif action == "journal":
             HOLD_ACTION = action
             press_action(HOLD_ACTION)
-            print("pressed journal")
+            ##print("pressed journal")
             # release_action(HOLD_ACTION)
             CURRENT_STATE = "mouse"
         elif action == "closeMenu":
@@ -114,7 +114,7 @@ def no_action(action):
 def click_once(action):
     global CURRENT_STATE, PREVIOUS_CLICK,ACTION_TO_RELEASE
 
-    print("CLICK ONCE STATE ---------------------------------")
+    ##print("CLICK ONCE STATE ---------------------------------")
     press_action(CURRENT_ACTION)
     ACTION_TO_RELEASE = CURRENT_ACTION
     CURRENT_STATE = "release"
@@ -134,7 +134,7 @@ def click_once(action):
 def holdTool(action):
     global CURRENT_STATE, TOOL_INDEX,TOOL_QUEUE,ACTION_TO_RELEASE
 
-    print("HOLDTOOL STATE ---------------------------------")
+    ##print("HOLDTOOL STATE ---------------------------------")
     # #print("Hold Action: ", HOLD_ACTION)
     if TOOL_INDEX % 2 == 0:
         release_action(HOLD_ACTION)
@@ -142,19 +142,19 @@ def holdTool(action):
         press_action(HOLD_ACTION)
 
     TOOL_INDEX+=1 
-    print(TOOL_QUEUE)
+    # print(TOOL_Q)
     if HOLD_ACTION not in TOOL_QUEUE:
-        # #print("left hold")
+        # ###print("left hold")
         ACTION_TO_RELEASE = HOLD_ACTION
         CURRENT_STATE = "release"
 
 def mouse_control(action, motion_x, motion_y):
     global CURRENT_STATE, RELEASE_NEXT, CLICK_ACTION, RELEASE_MENU, ACTION_TO_RELEASE
-    print("MOUSE STATE ---------------------------------")
+    ##print("MOUSE STATE ---------------------------------")
 
     if RELEASE_MENU == True:
         press_action(HOLD_ACTION)
-        print("in mouse, pressed: ",HOLD_ACTION)
+        ##print("in mouse, pressed: ",HOLD_ACTION)
         ACTION_TO_RELEASE = HOLD_ACTION
         CURRENT_STATE = "release"
         RELEASE_MENU = False
@@ -182,12 +182,12 @@ def mouse_control(action, motion_x, motion_y):
     # control mouse click while in menu or journal
     if RELEASE_NEXT == True:
         release_action(CLICK_ACTION)
-        print("in mouse control, released: ",CLICK_ACTION)
+        ##print("in mouse control, released: ",CLICK_ACTION)
         RELEASE_NEXT = False
     elif action == "tool" and action != CLICK_ACTION:
         CLICK_ACTION = "tool"
         press_action(CLICK_ACTION)
-        print("in mouse control, pressed: ",CLICK_ACTION)
+        ##print("in mouse control, pressed: ",CLICK_ACTION)
         RELEASE_NEXT = True
 
     # only can use tool to select and click items here
@@ -197,15 +197,15 @@ def mouse_control(action, motion_x, motion_y):
     # close the menu or journal
     if action == "closeMenu":
         release_action(HOLD_ACTION)
-        print("in mouse, released: ",HOLD_ACTION)
+        ##print("in mouse, released: ",HOLD_ACTION)
         RELEASE_MENU = True
 
 
 def release(action):
     global CURRENT_STATE, CURRENT_ACTION, INDEX, FIRST_HOLD, RELEASE_MENU
 
-    print("RELEASE STATE ---------------------------------")
-    print("in release, releasing action: ", ACTION_TO_RELEASE)
+    ##print("RELEASE STATE ---------------------------------")
+    ##print("in release, releasing action: ", ACTION_TO_RELEASE)
     release_action(ACTION_TO_RELEASE)
     CURRENT_STATE = "no"
     FIRST_HOLD = 1
