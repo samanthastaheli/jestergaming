@@ -33,6 +33,8 @@ In the startup menu, when you hit "s" to start the game, make sure to click on y
 
 You should be good to go from there! 
 
+Video Example: https://youtu.be/R_jDBKFpT8Y
+
 # Tips
 
 For best results, make sure to have good lighting and a non-busy background. The program doesn't do well with multiple hands in the camera, so make sure no one is standing behind you!
